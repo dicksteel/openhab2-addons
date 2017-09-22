@@ -18,5 +18,9 @@ public enum LutronCommandType {
     OUTPUT,
     DEVICE,
     MONITORING,
-    SYSTEM
+    SYSTEM,
+    AREA,
+    GROUP,
+    MODE,
+    TIMECLOCK
 }

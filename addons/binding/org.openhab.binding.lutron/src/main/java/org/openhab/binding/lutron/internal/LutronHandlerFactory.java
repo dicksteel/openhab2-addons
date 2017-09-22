@@ -22,6 +22,7 @@ import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.handler.KeypadHandler;
 import org.openhab.binding.lutron.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
+import org.openhab.binding.lutron.handler.TimeclockHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
@@ -42,7 +43,9 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE);
+            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, THING_TYPE_TIMECLOCK);
+
+    // TODO: Make THING_TYPE_TIMECLOCK discoverable
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,6 +68,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new OccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_KEYPAD)) {
             return new KeypadHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_TIMECLOCK)) {
+            return new TimeclockHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {

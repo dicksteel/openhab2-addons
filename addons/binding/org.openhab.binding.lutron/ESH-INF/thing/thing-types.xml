@@ -167,6 +167,31 @@
         </config-description>
     </thing-type>
 
+    <thing-type id="timeclock">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Timeclock</label>
+        <description>RA2/HWQS timeclock module</description>
+
+        <channels>
+            <channel id="clockmode" typeId="clockmode"/>
+            <channel id="sunrise" typeId="sunrisesunset"/>
+            <channel id="sunset" typeId="sunrisesunset"/>
+            <channel id="schedule" typeId="dayschedule"/>
+            <channel id="execevent" typeId="eventindex"/>
+            <channel id="enableevent" typeId="eventindex"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of timeclock in the Lutron control system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
     <bridge-type id="prgbridge">
         <label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
         <description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
@@ -471,13 +496,34 @@
     </channel-type>
     
     <channel-type id="sunrisesunset">
-        <item-type>DateTime</item-type>
-        <label>Sunrise</label>
-        <description>Today's sunrise</description>
+        <item-type>String</item-type>
+        <label>Sunrise/Sunset</label>
+        <description>Today's sunrise or sunset time</description>
         <category>Schedule</category>
         <state readOnly="true"/>
     </channel-type>
     
+    <channel-type id="clockmode">
+        <item-type>Number</item-type>
+        <label>Timeclock Mode</label>
+        <description>Mode number for timeclock</description>
+        <category>Schedule</category>
+    </channel-type>
+    
+    <channel-type id="eventindex">
+        <item-type>Number</item-type>
+        <label>Timeclock Event Index</label>
+        <description>Timeclock event index number</description>
+        <category>Schedule</category>
+    </channel-type>
+    
+    <channel-type id="dayschedule">
+        <item-type>String</item-type>
+        <label>Timeclock Schedule</label>
+        <description>Today's timeclock schedule</description>
+        <category>Schedule</category>
+    </channel-type>
+        
     <channel-type id="superschedulebutton">
         <item-type>Switch</item-type>
         <label>Superschedule</label>
