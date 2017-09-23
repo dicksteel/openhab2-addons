@@ -9,16 +9,23 @@
 package org.openhab.binding.lutron.internal.discovery.project;
 
 /**
- * Type of output device in a Lutron system.
+ * A Timeclock subsystem in a Lutron RadioRA2 or HWQS controller
  *
- * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Initial contribution
  */
-public enum OutputType {
-    INC,
-    MLV,
-    NON_DIM,
-    NON_DIM_INC,
-    AUTO_DETECT,
-    CCO_PULSED,
-    SYSTEM_SHADE
+public class Timeclock {
+
+    private String name;
+    private Integer integrationId;
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getIntegrationId() {
+        return integrationId;
+    }
+
+    // TODO: Discover timeclock modes
+
 }

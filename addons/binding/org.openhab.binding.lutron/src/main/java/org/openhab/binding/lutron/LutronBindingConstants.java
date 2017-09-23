@@ -29,6 +29,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
     public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
     public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
+    public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -59,6 +60,7 @@ public class LutronBindingConstants {
     public static final String CHANNEL_SCHEDULE = "schedule";
     public static final String CHANNEL_EXECEVENT = "execevent";
     public static final String CHANNEL_ENABLEEVENT = "enableevent";
+    public static final String CHANNEL_STEP = "step";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

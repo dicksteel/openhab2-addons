@@ -30,9 +30,11 @@ import org.openhab.binding.lutron.internal.discovery.project.Device;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceGroup;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceNode;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceType;
+import org.openhab.binding.lutron.internal.discovery.project.GreenMode;
 import org.openhab.binding.lutron.internal.discovery.project.Output;
 import org.openhab.binding.lutron.internal.discovery.project.OutputType;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
+import org.openhab.binding.lutron.internal.discovery.project.Timeclock;
 import org.openhab.binding.lutron.internal.xml.DbXmlInfoReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,8 @@ import org.slf4j.LoggerFactory;
  * The {@link LutronDeviceDiscoveryService} finds all devices paired with a Lutron bridge.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added support for Timeclock, Green Mode, phase-selectable dimmers, Pico, tabletop keypads, switch
+ *         modules, and VCRX
  */
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
@@ -89,6 +93,13 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             for (Area area : project.getAreas()) {
                 processArea(area, locationContext);
             }
+            for (Timeclock timeclock : project.getTimeclocks()) {
+                processTimeclocks(timeclock, locationContext);
+            }
+            for (GreenMode greenMode : project.getGreenModes()) {
+                processGreenModes(greenMode, locationContext);
+            }
+
         } else {
             logger.info("Could not read project file at {}", address);
         }
@@ -137,8 +148,11 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     notifyDiscovery(THING_TYPE_OCCUPANCYSENSOR, device.getIntegrationId(), label);
                     break;
 
+                case PICO_KEYPAD:
                 case SEETOUCH_KEYPAD:
                 case HYBRID_SEETOUCH_KEYPAD:
+                case SEETOUCH_TABLETOP_KEYPAD:
+                case VISOR_CONTROL_RECEIVER:
                     notifyDiscovery(THING_TYPE_KEYPAD, device.getIntegrationId(), label);
                     break;
 
@@ -160,16 +174,36 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             switch (type) {
                 case INC:
                 case MLV:
+                case AUTO_DETECT:
                     notifyDiscovery(THING_TYPE_DIMMER, output.getIntegrationId(), label);
                     break;
 
                 case NON_DIM:
+                case NON_DIM_INC:
                     notifyDiscovery(THING_TYPE_SWITCH, output.getIntegrationId(), label);
+                    break;
+
+                case SYSTEM_SHADE:
+                case CCO_PULSED:
+                    // TODO: Handle SYSTEM_SHADE and CCO_PULSED
                     break;
             }
         } else {
             logger.warn("Unrecognized output type {}", output.getType());
         }
+    }
+
+    private void processTimeclocks(Timeclock timeclock, Stack<String> context) {
+
+        String label = generateLabel(context, timeclock.getName());
+        notifyDiscovery(THING_TYPE_TIMECLOCK, timeclock.getIntegrationId(), label);
+        // logger.warn("Unrecognized timeclock type {}", timeclock.getType());
+    }
+
+    private void processGreenModes(GreenMode greenmode, Stack<String> context) {
+
+        String label = generateLabel(context, greenmode.getName());
+        notifyDiscovery(THING_TYPE_GREENMODE, greenmode.getIntegrationId(), label);
     }
 
     private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {

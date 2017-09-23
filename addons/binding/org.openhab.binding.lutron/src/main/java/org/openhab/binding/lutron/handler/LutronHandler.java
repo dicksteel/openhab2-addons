@@ -68,6 +68,10 @@ public abstract class LutronHandler extends BaseThingHandler {
                 parameters));
     }
 
+    protected void greenMode(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MODE, getIntegrationId(), parameters));
+    }
+
     protected void queryOutput(Object... parameters) {
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.OUTPUT, getIntegrationId(), parameters));
     }
@@ -79,6 +83,10 @@ public abstract class LutronHandler extends BaseThingHandler {
     protected void queryTimeclock(Object... parameters) {
         sendCommand(
                 new LutronCommand(LutronOperation.QUERY, LutronCommandType.TIMECLOCK, getIntegrationId(), parameters));
+    }
+
+    protected void queryGreenMode(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.MODE, getIntegrationId(), parameters));
     }
 
 }

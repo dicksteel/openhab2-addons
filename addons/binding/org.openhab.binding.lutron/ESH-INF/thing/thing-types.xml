@@ -192,6 +192,26 @@
         </config-description>
     </thing-type>
 
+    <thing-type id="greenmode">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Green Mode</label>
+        <description>Green mode step control</description>
+
+        <channels>
+            <channel id="step" typeId="greenstep"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of green mode controller in the Lutron control system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
     <bridge-type id="prgbridge">
         <label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
         <description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
@@ -523,7 +543,13 @@
         <description>Today's timeclock schedule</description>
         <category>Schedule</category>
     </channel-type>
-        
+
+    <channel-type id="greenstep">
+        <item-type>Number</item-type>
+        <label>Step</label>
+        <description>Green mode step number</description>
+    </channel-type>
+
     <channel-type id="superschedulebutton">
         <item-type>Switch</item-type>
         <label>Superschedule</label>

@@ -39,7 +39,6 @@ public class TimeclockHandler extends LutronHandler {
 
     private Logger logger = LoggerFactory.getLogger(TimeclockHandler.class);
 
-    // private TimeclockConfig config;
     private int integrationId;
 
     public TimeclockHandler(Thing thing) {
