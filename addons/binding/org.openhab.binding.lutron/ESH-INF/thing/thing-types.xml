@@ -516,7 +516,7 @@
     </channel-type>
     
     <channel-type id="sunrisesunset">
-        <item-type>String</item-type>
+        <item-type>DateTime</item-type>
         <label>Sunrise/Sunset</label>
         <description>Today's sunrise or sunset time</description>
         <category>Schedule</category>

@@ -11,10 +11,10 @@ package org.openhab.binding.lutron.handler;
 import static org.openhab.binding.lutron.LutronBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 
-//import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -61,7 +61,7 @@ public class TimeclockHandler extends LutronHandler {
         this.integrationId = id.intValue();
         updateStatus(ThingStatus.ONLINE);
 
-        // TODO: Is this initialization really needed here?
+        // TODO: What initialization is really needed here?
         queryTimeclock(ACTION_CLOCKMODE);
         queryTimeclock(ACTION_SUNRISE);
         queryTimeclock(ACTION_SUNSET);
@@ -81,6 +81,7 @@ public class TimeclockHandler extends LutronHandler {
             case CHANNEL_SUNSET:
                 queryTimeclock(ACTION_SUNSET);
                 break;
+            // TODO:
             // case CHANNEL_SCHEDULE:
             // queryTimeclock(ACTION_SCHEDULE);
             // break;
@@ -89,29 +90,62 @@ public class TimeclockHandler extends LutronHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.logger.debug("Handling timeclock command");
+        String channelID = channelUID.getId();
+        this.logger.debug("Handling timeclock command {} on channel {}", command.toString(), channelID);
+
+        // TODO: Handle (command instanceof RefreshType)
+
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE) && (command instanceof Number)) {
             BigDecimal mode = new BigDecimal(((Number) command).intValue());
             timeclock(ACTION_CLOCKMODE, mode);
         } else if (channelUID.getId().equals(CHANNEL_EXECEVENT) && (command instanceof Number)) {
             BigDecimal index = new BigDecimal(((Number) command).intValue());
-            timeclock(ACTION_CLOCKMODE, index);
+            timeclock(ACTION_EXECEVENT, index);
+        } else {
+            this.logger.debug("Ignoring invalid command");
         }
     }
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
+        Integer hour, minute;
+
         if (type != LutronCommandType.TIMECLOCK) {
             return;
         }
-        this.logger.debug("Handling reveived timeclock update");
+        this.logger.debug("Handling update received from timeclock");
+
         if (parameters.length > 1 && ACTION_CLOCKMODE.toString().equals(parameters[0])) {
             BigDecimal mode = new BigDecimal(parameters[1]);
             updateState(CHANNEL_CLOCKMODE, new DecimalType(mode));
         } else if (parameters.length > 1 && ACTION_SUNRISE.toString().equals(parameters[0])) {
-            updateState(CHANNEL_SUNRISE, new StringType(parameters[1]));
+            Calendar calendar = Calendar.getInstance();
+            try {
+                String hh = parameters[1].split(":", 2)[0];
+                String mm = parameters[1].split(":", 2)[1];
+                hour = Integer.parseInt(hh);
+                minute = Integer.parseInt(mm);
+            } catch (NumberFormatException | IndexOutOfBoundsException exception) {
+                this.logger.warn("Invaid sunrise time format received");
+                return;
+            }
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, minute);
+            updateState(CHANNEL_SUNRISE, new DateTimeType(calendar));
         } else if (parameters.length > 1 && ACTION_SUNSET.toString().equals(parameters[0])) {
-            updateState(CHANNEL_SUNSET, new StringType(parameters[1]));
+            Calendar calendar = Calendar.getInstance();
+            try {
+                String hh = parameters[1].split(":", 2)[0];
+                String mm = parameters[1].split(":", 2)[1];
+                hour = Integer.parseInt(hh);
+                minute = Integer.parseInt(mm);
+            } catch (NumberFormatException | IndexOutOfBoundsException exception) {
+                this.logger.warn("Invaid sunset time format received");
+                return;
+            }
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, minute);
+            updateState(CHANNEL_SUNSET, new DateTimeType(calendar));
         } else if (parameters.length > 1 && ACTION_EXECEVENT.toString().equals(parameters[0])) {
             BigDecimal index = new BigDecimal(parameters[1]);
             updateState(CHANNEL_EXECEVENT, new DecimalType(index));
