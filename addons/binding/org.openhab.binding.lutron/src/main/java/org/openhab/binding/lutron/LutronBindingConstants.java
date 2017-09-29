@@ -28,6 +28,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
     public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
+    public static final ThingTypeUID THING_TYPE_TTKEYPAD = new ThingTypeUID(BINDING_ID, "ttkeypad");
     public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
     public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
 

@@ -23,6 +23,7 @@ import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.handler.KeypadHandler;
 import org.openhab.binding.lutron.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
+import org.openhab.binding.lutron.handler.TabletopKeypadHandler;
 import org.openhab.binding.lutron.handler.TimeclockHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
@@ -40,14 +41,12 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
-            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TIMECLOCK,
+            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_TIMECLOCK,
             THING_TYPE_GREENMODE);
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
             PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE);
-
-    // TODO: Make THING_TYPE_TIMECLOCK & THING_TYPE_GREENMODE discoverable
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -70,6 +69,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new OccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_KEYPAD)) {
             return new KeypadHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_TTKEYPAD)) {
+            return new TabletopKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TIMECLOCK)) {
             return new TimeclockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GREENMODE)) {

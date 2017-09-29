@@ -151,9 +151,12 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case PICO_KEYPAD:
                 case SEETOUCH_KEYPAD:
                 case HYBRID_SEETOUCH_KEYPAD:
-                case SEETOUCH_TABLETOP_KEYPAD:
                 case VISOR_CONTROL_RECEIVER:
                     notifyDiscovery(THING_TYPE_KEYPAD, device.getIntegrationId(), label);
+                    break;
+
+                case SEETOUCH_TABLETOP_KEYPAD:
+                    notifyDiscovery(THING_TYPE_TTKEYPAD, device.getIntegrationId(), label);
                     break;
 
                 case MAIN_REPEATER:

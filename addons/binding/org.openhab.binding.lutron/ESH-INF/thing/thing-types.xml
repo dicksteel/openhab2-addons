@@ -167,6 +167,28 @@
         </config-description>
     </thing-type>
 
+
+    <thing-type id="ttkeypad">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Tabletop seeTouch Keypad</label>
+        <description>Lutron wireless tabletop keypad</description>
+        
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of keypad in the Lutron lighting system</description>
+            </parameter>
+            <parameter name="model" type="text" required="false">
+                <label>Keypad Model</label>
+                <description>Keypad model number without the prefix</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+
     <thing-type id="timeclock">
         <supported-bridge-type-refs>
             <bridge-type-ref id="ipbridge"/>
