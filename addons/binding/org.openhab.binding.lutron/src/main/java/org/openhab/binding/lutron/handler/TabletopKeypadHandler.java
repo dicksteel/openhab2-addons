@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.lutron.handler;
 
+import static org.openhab.binding.lutron.LutronBindingConstants.BINDING_ID;
+
 import java.util.ArrayList;
-
-//import static org.openhab.binding.lutron.LutronBindingConstants.*;
-
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,35 +175,37 @@ public class TabletopKeypadHandler extends LutronHandler {
         }
     }
 
-    protected void addChannel(COMPONENT comp) {
-        logger.debug("Adding channel for component {}", comp.toString());
-
+    private void configureChannels() {
+        Channel channel;
+        ChannelTypeUID channelTypeUID;
+        List<Channel> channelList = new ArrayList<Channel>();
         ThingBuilder thingBuilder = editThing();
 
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + comp.channel());
+        logger.debug("Configuring channels for keypad");
 
-        // ChannelType channelType = new ChannelType(channelTypeUID, false, "String", comp.toString(), comp.toString(),
-        // null, null, null, null);
+        // ChannelType channelType = new ChannelType(channelTypeUID, false, "String", component.toString(),
+        // comp.toString(),null, null, null, null);
 
-        // Channel channel = ChannelBuilder.create(new ChannelUID(c), t).build();
-
-        Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), comp.channel()), "String")
-                .withType(channelTypeUID).build();
-
-        thingBuilder.withChannel(channel);
-        updateThing(thingBuilder.build());
-    }
-
-    private void configureChannels() {
-
-        // TODO: Dynamically configure channels
+        // add channels for buttons
         for (COMPONENT component : buttonList) {
-            // add channels for buttons
+            // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, "button");
+            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "String")
+                    .withType(channelTypeUID).build();
+            channelList.add(channel);
         }
+
+        // add channels for LEDs
         for (COMPONENT component : ledList) {
-            // add channels for LEDs
-            addChannel(component);
+            // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, "ledIndicator");
+            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
+                    .withType(channelTypeUID).build();
+            channelList.add(channel);
         }
+
+        thingBuilder.withChannels(channelList);
+        updateThing(thingBuilder.build());
     }
 
     private ChannelUID channelFromComponent(int component) {
@@ -253,6 +256,33 @@ public class TabletopKeypadHandler extends LutronHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, Command command) {
+
+        logger.trace("Command {}  for {}", command, channelUID);
+
+        Channel channel = getThing().getChannel(channelUID.getId());
+
+        if (channel == null) {
+            logger.warn("Command on invalid channel {} for device {}", channelUID, getThing().getUID().toString());
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            // TODO: refresh if LED channel
+            return;
+        }
+
+        if (!(command instanceof StringType)) {
+            logger.warn("Command {} is not a String type for channel {} for device {}", command, channelUID,
+                    getThing().getUID());
+            return;
+        }
+
+        // logger.debug("Pressing button {} on {}", command, id > 0 ? 0 : name);
+
+        // TODO: Send command
+
+        // may need to ask the list if this can be set here?
+        // updateState(channelUID, UnDefType.UNDEF); // unneeded
     }
 
     @Override
