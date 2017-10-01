@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -99,6 +98,15 @@ public class TabletopKeypadHandler extends LutronHandler {
         public String channel() {
             return this.channel;
         }
+
+        public static boolean isLed(int id) {
+            return (id >= 81 && id <= 95);
+        }
+
+        public static boolean isButton(int id) {
+            return (id >= 1 && id <= 25);
+        }
+
     }
 
     private static final List<COMPONENT> buttonGroup1 = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON2,
@@ -183,9 +191,6 @@ public class TabletopKeypadHandler extends LutronHandler {
 
         logger.debug("Configuring channels for keypad");
 
-        // ChannelType channelType = new ChannelType(channelTypeUID, false, "String", component.toString(),
-        // comp.toString(),null, null, null, null);
-
         // add channels for buttons
         for (COMPONENT component : buttonList) {
             // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
@@ -213,11 +218,20 @@ public class TabletopKeypadHandler extends LutronHandler {
 
         // Get channel string from Lutron component ID using HashBiMap
         channel = ComponentChannelMap.get(component);
-
         if (channel == null) {
             this.logger.debug("Unknown component {}", component);
         }
         return channel == null ? null : new ChannelUID(getThing().getUID(), channel);
+    }
+
+    private Integer componentFromChannel(ChannelUID channelUID) {
+        Integer id = ComponentChannelMap.inverse().get(channelUID.getId());
+        return id;
+    }
+
+    @Override
+    public int getIntegrationId() {
+        return this.integrationId;
     }
 
     @Override
@@ -257,60 +271,75 @@ public class TabletopKeypadHandler extends LutronHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, Command command) {
 
-        logger.trace("Command {}  for {}", command, channelUID);
+        logger.debug("Command {}  for {}", command, channelUID);
 
         Channel channel = getThing().getChannel(channelUID.getId());
-
         if (channel == null) {
-            logger.warn("Command on invalid channel {} for device {}", channelUID, getThing().getUID().toString());
+            logger.warn("Command received on invalid channel {} for device {}", channelUID,
+                    getThing().getUID().toString());
             return;
         }
 
-        if (command instanceof RefreshType) {
-            // TODO: refresh if LED channel
+        Integer componentID = componentFromChannel(channelUID);
+        if (componentID == null) {
+            logger.warn("Command received on invalid channel {} for device {}", channelUID,
+                    getThing().getUID().toString());
             return;
         }
 
-        if (!(command instanceof StringType)) {
-            logger.warn("Command {} is not a String type for channel {} for device {}", command, channelUID,
+        if (COMPONENT.isLed(componentID)) {
+            if (command instanceof RefreshType) {
+                queryDevice(componentID, ACTION_LED_STATE);
+                return;
+            }
+
+            if (command instanceof OnOffType) {
+                if (command == OnOffType.ON) {
+                    device(componentID, ACTION_LED_STATE, LED_ON);
+                } else if (command == OnOffType.OFF) {
+                    device(componentID, ACTION_LED_STATE, LED_OFF);
+                } else {
+                    logger.warn("Assertion failure: OnOffType command state is neither ON nor OFF");
+                }
+            } else {
+                logger.warn("Invalid command {} received for channel {} device {}", command, channelUID,
+                        getThing().getUID());
+            }
+            return;
+        }
+
+        if (COMPONENT.isButton(componentID)) {
+            // TODO: Fix button channel sending
+            // if (command instanceof StringType) {
+            // device(componentID, ACTION_PRESS);
+            // } else {
+            logger.warn("Invalid command {} received for channel {} device {}", command, channelUID,
                     getThing().getUID());
+            // }
             return;
         }
 
-        // logger.debug("Pressing button {} on {}", command, id > 0 ? 0 : name);
-
-        // TODO: Send command
-
-        // may need to ask the list if this can be set here?
-        // updateState(channelUID, UnDefType.UNDEF); // unneeded
-    }
-
-    @Override
-    public int getIntegrationId() {
-        return this.integrationId;
     }
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-
         this.logger.debug("Linking keypad channel {}", channelUID.getId());
 
-        // look up component ID by channel
-        Integer id = ComponentChannelMap.inverse().get(channelUID.getId());
+        Integer id = componentFromChannel(channelUID);
         if (id == null) {
             this.logger.warn("Unrecognized channel ID {} linked", channelUID.getId());
             return;
         }
 
         // if this channel is for an LED, query the current state
-        if (id >= COMPONENT.LED1.id()) {
+        if (COMPONENT.isLed(id)) {
             queryDevice(id, ACTION_LED_STATE);
         }
     }
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        this.logger.debug("Handling command type {} from keypad", type.toString());
+        this.logger.debug("Handling command {} {} from keypad", type.toString(), parameters);
         if (type == LutronCommandType.DEVICE && parameters.length >= 2) {
             int component;
 
