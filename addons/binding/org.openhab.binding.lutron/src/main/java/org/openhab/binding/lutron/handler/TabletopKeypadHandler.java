@@ -194,7 +194,7 @@ public class TabletopKeypadHandler extends LutronHandler {
         // add channels for buttons
         for (COMPONENT component : buttonList) {
             // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
-            channelTypeUID = new ChannelTypeUID(BINDING_ID, "button");
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, "buttonEvent");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "String")
                     .withType(channelTypeUID).build();
             channelList.add(channel);
@@ -360,9 +360,13 @@ public class TabletopKeypadHandler extends LutronHandler {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    postCommand(channelUID, OnOffType.ON);
+                    // postCommand(channelUID, OnOffType.ON);
+                    // TODO: use trigger instead
+                    triggerChannel(channelUID, "BUTTON_PRESS");
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    postCommand(channelUID, OnOffType.OFF);
+                    // postCommand(channelUID, OnOffType.OFF);
+                    // TODO: user trigger instead
+                    triggerChannel(channelUID, "BUTTON_RELEASE");
                 }
             }
         }

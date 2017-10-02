@@ -508,6 +508,19 @@
         <category>Switch</category>
     </channel-type>
 
+    <!-- button event channel type used by ttkeypad handler -->
+    <channel-type id="buttonEvent">
+            <kind>trigger</kind>
+        <label>Button event</label>
+        <description>Button activation event</description>
+        <event>
+            <options>
+                <option value="BUTTON_PRESS">press</option>
+                <option value="BUTTON_RELEASE">release</option>
+            </options>
+        </event>
+    </channel-type>
+    
     <channel-type id="ledIndicator">
         <item-type>Switch</item-type>
         <label>Keypad button LED indicator</label>
