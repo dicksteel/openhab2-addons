@@ -22,6 +22,7 @@ import org.openhab.binding.lutron.handler.GreenModeHandler;
 import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.handler.KeypadHandler;
 import org.openhab.binding.lutron.handler.OccupancySensorHandler;
+import org.openhab.binding.lutron.handler.PicoKeypadHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
 import org.openhab.binding.lutron.handler.TabletopKeypadHandler;
 import org.openhab.binding.lutron.handler.TimeclockHandler;
@@ -41,8 +42,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
-            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_TIMECLOCK,
-            THING_TYPE_GREENMODE);
+            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_PICO,
+            THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE);
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
@@ -71,6 +72,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new KeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TTKEYPAD)) {
             return new TabletopKeypadHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_PICO)) {
+            return new PicoKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TIMECLOCK)) {
             return new TimeclockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GREENMODE)) {

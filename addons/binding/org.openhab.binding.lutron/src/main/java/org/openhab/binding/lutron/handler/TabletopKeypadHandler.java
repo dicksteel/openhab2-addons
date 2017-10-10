@@ -24,11 +24,6 @@ import org.slf4j.LoggerFactory;
  */
 public class TabletopKeypadHandler extends BaseKeypadHandler {
 
-    public TabletopKeypadHandler(Thing thing) {
-        super(thing);
-        // TODO Auto-generated constructor stub
-    }
-
     private static enum COMPONENT implements KeypadComponent {
         BUTTON1(1, "button1"),
         BUTTON2(2, "button2"),
@@ -119,27 +114,7 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
     private static final List<COMPONENT> ledGroup3 = Arrays.asList(COMPONENT.LED11, COMPONENT.LED12, COMPONENT.LED13,
             COMPONENT.LED14, COMPONENT.LED15);
 
-    // private static final Integer ACTION_PRESS = 3;
-    // private static final Integer ACTION_RELEASE = 4;
-    // private static final Integer ACTION_LED_STATE = 9;
-    //
-    // private static final Integer LED_OFF = 0;
-    // private static final Integer LED_ON = 1;
-    //
-    // private List<COMPONENT> buttonList = new ArrayList<COMPONENT>();
-    // private List<COMPONENT> ledList = new ArrayList<COMPONENT>();
-    //
-    // private int integrationId;
-    //
-    // private String model;
-    //
-    // private BiMap<Integer, String> ComponentChannelMap = HashBiMap.create(50);
-    //
     private Logger logger = LoggerFactory.getLogger(TabletopKeypadHandler.class);
-    //
-    // public TabletopKeypadHandler(Thing thing) {
-    // super(thing);
-    // }
 
     @Override
     protected void configureComponents(String model) {
@@ -148,7 +123,7 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
 
         switch (model) {
             default:
-                this.logger.info("No valid keypad model defined ({}). Assuming model T15RL.", model);
+                this.logger.warn("No valid keypad model defined ({}). Assuming model T15RL.", model);
             case "T15RL":
                 buttonList.addAll(buttonGroup3);
                 ledList.addAll(ledGroup3);
@@ -175,193 +150,8 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
         }
     }
 
-    // protected void configureChannels() {
-    // Channel channel;
-    // ChannelTypeUID channelTypeUID;
-    // List<Channel> channelList = new ArrayList<Channel>();
-    // ThingBuilder thingBuilder = editThing();
-    //
-    // logger.debug("Configuring channels for keypad");
-    //
-    // // add channels for buttons
-    // for (KeypadComponent component : buttonList) {
-    // // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
-    // channelTypeUID = new ChannelTypeUID(BINDING_ID, "buttonEvent");
-    // channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "String")
-    // .withType(channelTypeUID).build();
-    // channelList.add(channel);
-    // }
-    //
-    // // add channels for LEDs
-    // for (KeypadComponent component : ledList) {
-    // // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
-    // channelTypeUID = new ChannelTypeUID(BINDING_ID, "ledIndicator");
-    // channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
-    // .withType(channelTypeUID).build();
-    // channelList.add(channel);
-    // }
-    //
-    // thingBuilder.withChannels(channelList);
-    // updateThing(thingBuilder.build());
-    // }
-
-    // private ChannelUID channelFromComponent(int component) {
-    // String channel = null;
-    //
-    // // Get channel string from Lutron component ID using HashBiMap
-    // channel = ComponentChannelMap.get(component);
-    // if (channel == null) {
-    // this.logger.debug("Unknown component {}", component);
-    // }
-    // return channel == null ? null : new ChannelUID(getThing().getUID(), channel);
-    // }
-
-    // private Integer componentFromChannel(ChannelUID channelUID) {
-    // Integer id = ComponentChannelMap.inverse().get(channelUID.getId());
-    // return id;
-    // }
-    //
-    // @Override
-    // public int getIntegrationId() {
-    // return this.integrationId;
-    // }
-
-    // @Override
-    // public void initialize() {
-    // Number id = (Number) getThing().getConfiguration().get("integrationId");
-    // this.logger.debug("Initializing Tabletop Keypad handler for integration ID {}", id);
-    //
-    // if (id == null) {
-    // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
-    // return;
-    // }
-    // this.integrationId = id.intValue();
-    //
-    // this.model = (String) getThing().getConfiguration().get("model");
-    //
-    // configureComponents(this.model);
-    //
-    // // load the channel-id map
-    // for (KeypadComponent component : buttonList) {
-    // ComponentChannelMap.put(component.id(), component.channel());
-    // }
-    // for (KeypadComponent component : ledList) {
-    // ComponentChannelMap.put(component.id(), component.channel());
-    // }
-    //
-    // configureChannels();
-    //
-    // updateStatus(ThingStatus.ONLINE);
-    //
-    // // query the status of all keypad LEDs
-    // for (KeypadComponent component : ledList) {
-    // queryDevice(component.id(), ACTION_LED_STATE);
-    // }
-    // return;
-    // }
-
-    // @Override
-    // public void handleCommand(final ChannelUID channelUID, Command command) {
-    //
-    // logger.debug("Command {} for {}", command, channelUID);
-    //
-    // Channel channel = getThing().getChannel(channelUID.getId());
-    // if (channel == null) {
-    // logger.warn("Command received on invalid channel {} for device {}", channelUID,
-    // getThing().getUID().toString());
-    // return;
-    // }
-    //
-    // Integer componentID = componentFromChannel(channelUID);
-    // if (componentID == null) {
-    // logger.warn("Command received on invalid channel {} for device {}", channelUID,
-    // getThing().getUID().toString());
-    // return;
-    // }
-    //
-    // if (COMPONENT.isLed(componentID)) {
-    // if (command instanceof RefreshType) {
-    // queryDevice(componentID, ACTION_LED_STATE);
-    // return;
-    // }
-    //
-    // if (command instanceof OnOffType) {
-    // if (command == OnOffType.ON) {
-    // device(componentID, ACTION_LED_STATE, LED_ON);
-    // } else if (command == OnOffType.OFF) {
-    // device(componentID, ACTION_LED_STATE, LED_OFF);
-    // } else {
-    // logger.warn("Assertion failure: OnOffType command state is neither ON nor OFF");
-    // }
-    // } else {
-    // logger.warn("Invalid command {} received for channel {} device {}", command, channelUID,
-    // getThing().getUID());
-    // }
-    // return;
-    // }
-    //
-    // if (COMPONENT.isButton(componentID)) {
-    // // TODO: Fix button channel sending
-    // // if (command instanceof StringType) {
-    // // device(componentID, ACTION_PRESS);
-    // // } else {
-    // logger.warn("Invalid command {} received for channel {} device {}", command, channelUID,
-    // getThing().getUID());
-    // // }
-    // return;
-    // }
-    //
-    // }
-
-    // @Override
-    // public void channelLinked(ChannelUID channelUID) {
-    // this.logger.debug("Linking keypad channel {}", channelUID.getId());
-    //
-    // Integer id = componentFromChannel(channelUID);
-    // if (id == null) {
-    // this.logger.warn("Unrecognized channel ID {} linked", channelUID.getId());
-    // return;
-    // }
-    //
-    // // if this channel is for an LED, query the current state
-    // if (COMPONENT.isLed(id)) {
-    // queryDevice(id, ACTION_LED_STATE);
-    // }
-    // }
-
-    // @Override
-    // public void handleUpdate(LutronCommandType type, String... parameters) {
-    // this.logger.debug("Handling command {} {} from keypad", type.toString(), parameters);
-    // if (type == LutronCommandType.DEVICE && parameters.length >= 2) {
-    // int component;
-    //
-    // try {
-    // component = Integer.parseInt(parameters[0]);
-    // } catch (NumberFormatException e) {
-    // this.logger.error("Invalid component {} in keypad update event message", parameters[0]);
-    // return;
-    // }
-    //
-    // ChannelUID channelUID = channelFromComponent(component);
-    //
-    // if (channelUID != null) {
-    // if (ACTION_LED_STATE.toString().equals(parameters[1]) && parameters.length >= 3) {
-    // if (LED_ON.toString().equals(parameters[2])) {
-    // updateState(channelUID, OnOffType.ON);
-    // } else if (LED_OFF.toString().equals(parameters[2])) {
-    // updateState(channelUID, OnOffType.OFF);
-    // }
-    // } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-    // // postCommand(channelUID, OnOffType.ON);
-    // // TODO: use trigger instead
-    // triggerChannel(channelUID, "BUTTON_PRESS");
-    // } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-    // // postCommand(channelUID, OnOffType.OFF);
-    // // TODO: user trigger instead
-    // triggerChannel(channelUID, "BUTTON_RELEASE");
-    // }
-    // }
-    // }
-    // }
+    public TabletopKeypadHandler(Thing thing) {
+        super(thing);
+    }
 
 }

@@ -51,11 +51,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             channel = c;
         }
 
-        // public void Component(final int i, final String c) {
-        // id = i;
-        // channel = c;
-        // }
-
         @Override
         public int id() {
             return this.id;
@@ -74,32 +69,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return (id >= 1 && id <= 25);
         }
 
-        // @Override
-        // public void COMPONENT(int i, String c) {
-        // // TODO Auto-generated method stub
-        //
-        // }
-
     }
-
-    // private static final List<COMPONENT> buttonGroup1 = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON2,
-    // COMPONENT.BUTTON3, COMPONENT.BUTTON4, COMPONENT.BUTTON5);
-    // private static final List<COMPONENT> buttonGroup2 = Arrays.asList(COMPONENT.BUTTON6, COMPONENT.BUTTON7,
-    // COMPONENT.BUTTON8, COMPONENT.BUTTON9, COMPONENT.BUTTON10);
-    // private static final List<COMPONENT> buttonGroup3 = Arrays.asList(COMPONENT.BUTTON11, COMPONENT.BUTTON12,
-    // COMPONENT.BUTTON13, COMPONENT.BUTTON14, COMPONENT.BUTTON15);
-    //
-    // private static final List<COMPONENT> buttonsBottomRL = Arrays.asList(COMPONENT.BUTTON16, COMPONENT.BUTTON17,
-    // COMPONENT.LOWER3, COMPONENT.RAISE3);
-    // private static final List<COMPONENT> buttonsBottomCRL = Arrays.asList(COMPONENT.LOWER1, COMPONENT.RAISE1,
-    // COMPONENT.LOWER2, COMPONENT.RAISE2, COMPONENT.LOWER3, COMPONENT.RAISE3);
-    //
-    // private static final List<COMPONENT> ledGroup1 = Arrays.asList(COMPONENT.LED1, COMPONENT.LED2, COMPONENT.LED3,
-    // COMPONENT.LED4, COMPONENT.LED5);
-    // private static final List<COMPONENT> ledGroup2 = Arrays.asList(COMPONENT.LED6, COMPONENT.LED7, COMPONENT.LED8,
-    // COMPONENT.LED9, COMPONENT.LED10);
-    // private static final List<COMPONENT> ledGroup3 = Arrays.asList(COMPONENT.LED11, COMPONENT.LED12, COMPONENT.LED13,
-    // COMPONENT.LED14, COMPONENT.LED15);
 
     protected static final Integer ACTION_PRESS = 3;
     protected static final Integer ACTION_RELEASE = 4;
@@ -119,44 +89,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     private Logger logger = LoggerFactory.getLogger(BaseKeypadHandler.class);
 
+    protected abstract void configureComponents(String model);
+
     public BaseKeypadHandler(Thing thing) {
         super(thing);
     }
-
-    protected abstract void configureComponents(String model);
-
-    // private void configureComponents(String model) {
-    // model = model == null ? "null" : model;
-    // this.logger.debug("Configuring components for keypad model {}", model);
-    //
-    // switch (model) {
-    // default:
-    // this.logger.info("No valid keypad model defined ({}). Assuming model T15RL.", model);
-    // case "T15RL":
-    // buttonList.addAll(buttonGroup3);
-    // ledList.addAll(ledGroup3);
-    // case "T10RL":
-    // buttonList.addAll(buttonGroup2);
-    // ledList.addAll(ledGroup2);
-    // case "T5RL":
-    // buttonList.addAll(buttonGroup1);
-    // buttonList.addAll(buttonsBottomRL);
-    // ledList.addAll(ledGroup1);
-    // break;
-    //
-    // case "T15CRL":
-    // buttonList.addAll(buttonGroup3);
-    // ledList.addAll(ledGroup3);
-    // case "T10CRL":
-    // buttonList.addAll(buttonGroup2);
-    // ledList.addAll(ledGroup2);
-    // case "T5CRL":
-    // buttonList.addAll(buttonGroup1);
-    // buttonList.addAll(buttonsBottomCRL);
-    // ledList.addAll(ledGroup1);
-    // break;
-    // }
-    // }
 
     protected void configureChannels() {
         Channel channel;
@@ -212,7 +149,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     @Override
     public void initialize() {
         Number id = (Number) getThing().getConfiguration().get("integrationId");
-        this.logger.debug("Initializing Tabletop Keypad handler for integration ID {}", id);
+        this.logger.debug("Initializing Base Keypad Handler for integration ID {}", id);
 
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
