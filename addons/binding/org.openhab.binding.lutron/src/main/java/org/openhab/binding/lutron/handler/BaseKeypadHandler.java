@@ -35,7 +35,7 @@ import com.google.common.collect.HashBiMap;
 /**
  * Abstract class providing common definitions and methods for derived keypad classes
  *
- * @author Bob Adair - Initial contribution, partly based on Allan Tong's KeypadHandler class
+ * @author Bob Adair - Initial contribution, based partly on Allan Tong's KeypadHandler class
  */
 public abstract class BaseKeypadHandler extends LutronHandler {
 
@@ -149,7 +149,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     @Override
     public void initialize() {
         Number id = (Number) getThing().getConfiguration().get("integrationId");
-        this.logger.debug("Initializing Base Keypad Handler for integration ID {}", id);
+        this.logger.debug("Initializing Keypad Handler for integration ID {}", id);
 
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
@@ -157,7 +157,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
         this.integrationId = id.intValue();
 
-        this.model = (String) getThing().getConfiguration().get("model");
+        this.model = ((String) getThing().getConfiguration().get("model")).toUpperCase();
+        if (this.model.contains("-")) {
+            // strip off system prefix if model is of the form "system-model"
+            String[] modelSplit = this.model.split("-", 2);
+            this.model = modelSplit[1];
+        }
 
         configureComponents(this.model);
 
@@ -273,11 +278,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     }
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
                     // postCommand(channelUID, OnOffType.ON);
-                    // TODO: use trigger instead
                     triggerChannel(channelUID, "BUTTON_PRESS");
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
                     // postCommand(channelUID, OnOffType.OFF);
-                    // TODO: user trigger instead
                     triggerChannel(channelUID, "BUTTON_RELEASE");
                 }
             }

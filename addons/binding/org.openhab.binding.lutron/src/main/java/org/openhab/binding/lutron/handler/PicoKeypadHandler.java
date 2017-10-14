@@ -16,10 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler responsible for communicating with Lutron Tabletop seeTouch keypads used in RadioRA2 and Homeworks QS systems
- * (e.g. RR-T5RL, RR-T10RL, RR-T15RL, etc.)
+ * Handler responsible for communicating with Lutron Pico keypads
  *
- * @author Bob Adair - Initial contribution, partly based on Allan Tong's KeypadHandler class
+ * @author Bob Adair - Initial contribution
  */
 public class PicoKeypadHandler extends BaseKeypadHandler {
 

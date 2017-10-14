@@ -15,6 +15,7 @@ import java.util.Calendar;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -61,11 +62,10 @@ public class TimeclockHandler extends LutronHandler {
         this.integrationId = id.intValue();
         updateStatus(ThingStatus.ONLINE);
 
-        // TODO: What initialization is really needed here?
         queryTimeclock(ACTION_CLOCKMODE);
         queryTimeclock(ACTION_SUNRISE);
         queryTimeclock(ACTION_SUNSET);
-        // queryTimeclock(ACTION_SCHEDULE);
+        queryTimeclock(ACTION_SCHEDULE);
     }
 
     @Override
@@ -81,10 +81,9 @@ public class TimeclockHandler extends LutronHandler {
             case CHANNEL_SUNSET:
                 queryTimeclock(ACTION_SUNSET);
                 break;
-            // TODO:
-            // case CHANNEL_SCHEDULE:
-            // queryTimeclock(ACTION_SCHEDULE);
-            // break;
+            case CHANNEL_SCHEDULE:
+                queryTimeclock(ACTION_SCHEDULE);
+                break;
         }
     }
 
@@ -118,6 +117,7 @@ public class TimeclockHandler extends LutronHandler {
         if (parameters.length > 1 && ACTION_CLOCKMODE.toString().equals(parameters[0])) {
             BigDecimal mode = new BigDecimal(parameters[1]);
             updateState(CHANNEL_CLOCKMODE, new DecimalType(mode));
+
         } else if (parameters.length > 1 && ACTION_SUNRISE.toString().equals(parameters[0])) {
             Calendar calendar = Calendar.getInstance();
             try {
@@ -132,6 +132,7 @@ public class TimeclockHandler extends LutronHandler {
             calendar.set(Calendar.HOUR_OF_DAY, hour);
             calendar.set(Calendar.MINUTE, minute);
             updateState(CHANNEL_SUNRISE, new DateTimeType(calendar));
+
         } else if (parameters.length > 1 && ACTION_SUNSET.toString().equals(parameters[0])) {
             Calendar calendar = Calendar.getInstance();
             try {
@@ -146,9 +147,14 @@ public class TimeclockHandler extends LutronHandler {
             calendar.set(Calendar.HOUR_OF_DAY, hour);
             calendar.set(Calendar.MINUTE, minute);
             updateState(CHANNEL_SUNSET, new DateTimeType(calendar));
+
         } else if (parameters.length > 1 && ACTION_EXECEVENT.toString().equals(parameters[0])) {
             BigDecimal index = new BigDecimal(parameters[1]);
             updateState(CHANNEL_EXECEVENT, new DecimalType(index));
+        } else if (parameters.length > 1 && ACTION_SCHEDULE.toString().equals(parameters[0])) {
+            // TODO: Add code to handle multi-line ACTION_SCHEDULE responses.
+            // For now concatenate response lines < 1 second since last ACTION_SCHEDULE response?
+            updateState(CHANNEL_SCHEDULE, new StringType(parameters[1]));
         }
     }
 }

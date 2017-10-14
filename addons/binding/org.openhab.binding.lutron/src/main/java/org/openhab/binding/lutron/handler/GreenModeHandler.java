@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,8 @@ public class GreenModeHandler extends LutronHandler {
         }
         this.integrationId = id.intValue();
         updateStatus(ThingStatus.ONLINE);
-        greenMode(ACTION_STEP);
+        // TODO: add job to periodically query green mode step
+        queryGreenMode(ACTION_STEP);
     }
 
     @Override
@@ -73,6 +75,8 @@ public class GreenModeHandler extends LutronHandler {
             } else if (command instanceof Number) {
                 BigDecimal step = new BigDecimal(((Number) command).intValue());
                 greenMode(ACTION_STEP, step);
+            } else if (command instanceof RefreshType) {
+                queryGreenMode(ACTION_STEP);
             } else {
                 this.logger.info("Ignoring invalid command {}", command.toString());
             }
