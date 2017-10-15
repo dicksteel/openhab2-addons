@@ -40,6 +40,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Handler responsible for communicating with the main Lutron control hub.
  *
@@ -73,6 +75,18 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private Date lastDbUpdateDate;
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
+
+    // We must keep track of the Timeclock integration ID because, for reasons known only to Lutron, when
+    // responding to a query schedule request the RA2 main repeater will not include the integration ID.
+    private Integer timeclockId = 0;
+
+    public Integer getTimeclockId() {
+        return timeclockId;
+    }
+
+    public void setTimeclockId(@NotNull Integer timeclockId) {
+        this.timeclockId = timeclockId;
+    }
 
     public IPBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -312,12 +326,29 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                     continue;
                 }
 
-                Integer integrationId = new Integer(matcher.group(2));
+                Integer integrationId;
+
+                // Special handling for timeclock schedule response as there is no integration ID provided
+                if (type == LutronCommandType.TIMECLOCK && matcher.group(2).trim().startsWith("Event ID")) {
+                    integrationId = getTimeclockId();
+                    if (integrationId == 0) {
+                        this.logger.warn(
+                                "Ignoring timeclock schedule reponse because no Timeclock ID is registered with handler");
+                        continue;
+                    }
+                } else {
+                    try {
+                        integrationId = new Integer(matcher.group(2));
+                    } catch (NumberFormatException e1) {
+                        this.logger.warn("Integer conversion error parsing update: {}", line);
+                        continue;
+                    }
+                }
+
                 LutronHandler handler = findThingHandler(integrationId);
 
                 if (handler != null) {
                     String paramString = matcher.group(3);
-
                     try {
                         handler.handleUpdate(type, paramString.split(","));
                     } catch (Exception e) {

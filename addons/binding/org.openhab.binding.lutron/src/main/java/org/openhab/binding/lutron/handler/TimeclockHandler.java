@@ -60,12 +60,18 @@ public class TimeclockHandler extends LutronHandler {
             return;
         }
         this.integrationId = id.intValue();
+        getBridgeHandler().setTimeclockId(integrationId); // notify the bridge handler of the timeclock ID
         updateStatus(ThingStatus.ONLINE);
 
         queryTimeclock(ACTION_CLOCKMODE);
         queryTimeclock(ACTION_SUNRISE);
         queryTimeclock(ACTION_SUNSET);
         queryTimeclock(ACTION_SCHEDULE);
+    }
+
+    @Override
+    public void dispose() {
+        getBridgeHandler().setTimeclockId(0); // unregister timeclock with bridge handler
     }
 
     @Override
@@ -151,10 +157,11 @@ public class TimeclockHandler extends LutronHandler {
         } else if (parameters.length > 1 && ACTION_EXECEVENT.toString().equals(parameters[0])) {
             BigDecimal index = new BigDecimal(parameters[1]);
             updateState(CHANNEL_EXECEVENT, new DecimalType(index));
-        } else if (parameters.length > 1 && ACTION_SCHEDULE.toString().equals(parameters[0])) {
+        } else if (parameters.length > 1 && parameters[0].trim().startsWith("Event")) {
             // TODO: Add code to handle multi-line ACTION_SCHEDULE responses.
             // For now concatenate response lines < 1 second since last ACTION_SCHEDULE response?
-            updateState(CHANNEL_SCHEDULE, new StringType(parameters[1]));
+            // Or look for repeating IDs in data?
+            updateState(CHANNEL_SCHEDULE, new StringType(parameters[0]));
         }
     }
 }

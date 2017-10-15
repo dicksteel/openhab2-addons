@@ -157,11 +157,14 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
         this.integrationId = id.intValue();
 
-        this.model = ((String) getThing().getConfiguration().get("model")).toUpperCase();
-        if (this.model.contains("-")) {
-            // strip off system prefix if model is of the form "system-model"
-            String[] modelSplit = this.model.split("-", 2);
-            this.model = modelSplit[1];
+        this.model = (String) getThing().getConfiguration().get("model");
+        if (this.model != null) {
+            this.model.toUpperCase();
+            if (this.model.contains("-")) {
+                // strip off system prefix if model is of the form "system-model"
+                String[] modelSplit = this.model.split("-", 2);
+                this.model = modelSplit[1];
+            }
         }
 
         configureComponents(this.model);
