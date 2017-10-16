@@ -161,7 +161,9 @@ public class TimeclockHandler extends LutronHandler {
             // TODO: Add code to handle multi-line ACTION_SCHEDULE responses.
             // For now concatenate response lines < 1 second since last ACTION_SCHEDULE response?
             // Or look for repeating IDs in data?
-            updateState(CHANNEL_SCHEDULE, new StringType(parameters[0]));
+            updateState(CHANNEL_SCHEDULE,
+                    new StringType(parameters[0] + parameters[1] + parameters[2] + parameters[3])); // Use String.join
+                                                                                                    // in java 8
         }
     }
 }

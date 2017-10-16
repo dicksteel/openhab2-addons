@@ -300,6 +300,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     private void parseUpdates() {
+        String paramString;
+
         for (String line : this.session.readLines()) {
             if (line.trim().equals("")) {
                 // Sometimes we get an empty line (possibly only when prompts are disabled). Ignore them.
@@ -336,19 +338,23 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                                 "Ignoring timeclock schedule reponse because no Timeclock ID is registered with handler");
                         continue;
                     }
+                    paramString = matcher.group(2) + "," + matcher.group(3);
                 } else {
+
+                    // Normal update handling
                     try {
                         integrationId = new Integer(matcher.group(2));
                     } catch (NumberFormatException e1) {
                         this.logger.warn("Integer conversion error parsing update: {}", line);
                         continue;
                     }
+                    paramString = matcher.group(3);
                 }
 
+                // Now dispatch update to the proper thing handler
                 LutronHandler handler = findThingHandler(integrationId);
 
                 if (handler != null) {
-                    String paramString = matcher.group(3);
                     try {
                         handler.handleUpdate(type, paramString.split(","));
                     } catch (Exception e) {
