@@ -150,8 +150,11 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 case SEETOUCH_KEYPAD:
                 case HYBRID_SEETOUCH_KEYPAD:
-                case VISOR_CONTROL_RECEIVER:
                     notifyDiscovery(THING_TYPE_KEYPAD, device.getIntegrationId(), label);
+                    break;
+
+                case VISOR_CONTROL_RECEIVER:
+                    notifyDiscovery(THING_TYPE_VCRX, device.getIntegrationId(), label);
                     break;
 
                 case SEETOUCH_TABLETOP_KEYPAD:
@@ -189,9 +192,11 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     notifyDiscovery(THING_TYPE_SWITCH, output.getIntegrationId(), label);
                     break;
 
-                case SYSTEM_SHADE:
                 case CCO_PULSED:
-                    // TODO: Handle SYSTEM_SHADE and CCO_PULSED
+                    notifyDiscovery(THING_TYPE_CCO_PULSED, output.getIntegrationId(), label);
+
+                case SYSTEM_SHADE:
+                    // TODO: Handle SYSTEM_SHADE
                     break;
             }
         } else {

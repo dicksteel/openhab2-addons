@@ -74,6 +74,33 @@
         </config-description>
     </thing-type>
 
+    <thing-type id="ccopulsed">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Pulsed CCO</label>
+        <description>Pulsed CCO Output</description>
+
+        <channels>
+            <channel id="triggeroutput" typeId="triggerOutput"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of CCO in the Lutron control system</description>
+            </parameter>
+                <parameter name="defaultPulse" type="integer">
+                <label>Pulse Length</label>
+                <description>Default pulse length in seconds (0.1 - 100)</description>
+                <default>0.5</default>
+            </parameter>
+            
+        </config-description>
+    </thing-type>
+
+
     <thing-type id="occupancysensor">
         <supported-bridge-type-refs>
             <bridge-type-ref id="ipbridge"/>
@@ -208,6 +235,25 @@
         </config-description>
     </thing-type>
 
+    <thing-type id="vcrx">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>VCRX</label>
+        <description>Lutron visor control receiver</description>
+        
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of VCRX in the Lutron control system</description>
+            </parameter>
+            <parameter name="model" type="text" required="false">
+                <label>Model</label>
+                <description>VCRX model number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 
     <thing-type id="timeclock">
         <supported-bridge-type-refs>
@@ -539,6 +585,14 @@
                 <option value="BUTTON_RELEASE">release</option>
             </options>
         </event>
+    </channel-type>
+    
+   <!-- channel type used by pulsed cco handler -->
+    <channel-type id="triggerOutput">
+        <item-type>Switch</item-type>
+        <label>Trigger Pulse</label>
+        <description>Trigger CCO pulse</description>
+        <category>Switch</category>
     </channel-type>
     
     <channel-type id="ledIndicator">

@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.lutron.handler.CcoHandler;
 import org.openhab.binding.lutron.handler.DimmerHandler;
 import org.openhab.binding.lutron.handler.GreenModeHandler;
 import org.openhab.binding.lutron.handler.IPBridgeHandler;
@@ -26,6 +27,7 @@ import org.openhab.binding.lutron.handler.PicoKeypadHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
 import org.openhab.binding.lutron.handler.TabletopKeypadHandler;
 import org.openhab.binding.lutron.handler.TimeclockHandler;
+import org.openhab.binding.lutron.handler.VcrxHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
@@ -43,7 +45,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
             THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_PICO,
-            THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE);
+            THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED);
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
@@ -66,6 +68,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new DimmerHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
             return new SwitchHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_CCO_PULSED)) {
+            return new CcoHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OCCUPANCYSENSOR)) {
             return new OccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_KEYPAD)) {
@@ -78,6 +82,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new TimeclockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GREENMODE)) {
             return new GreenModeHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_VCRX)) {
+            return new VcrxHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {

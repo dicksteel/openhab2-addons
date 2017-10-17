@@ -80,6 +80,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected List<KeypadComponent> buttonList = new ArrayList<KeypadComponent>();
     protected List<KeypadComponent> ledList = new ArrayList<KeypadComponent>();
+    protected List<KeypadComponent> cciList = new ArrayList<KeypadComponent>(); // for VCRX
 
     protected int integrationId;
 
@@ -117,6 +118,14 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
             channelTypeUID = new ChannelTypeUID(BINDING_ID, "ledIndicator");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
+                    .withType(channelTypeUID).build();
+            channelList.add(channel);
+        }
+
+        // add channels for CCIs (for VCRX)
+        for (KeypadComponent component : cciList) {
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, "cciState");
+            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Contact")
                     .withType(channelTypeUID).build();
             channelList.add(channel);
         }
@@ -176,6 +185,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         for (KeypadComponent component : ledList) {
             ComponentChannelMap.put(component.id(), component.channel());
         }
+        for (KeypadComponent component : cciList) {
+            ComponentChannelMap.put(component.id(), component.channel());
+        }
 
         configureChannels();
 
@@ -185,6 +197,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         for (KeypadComponent component : ledList) {
             queryDevice(component.id(), ACTION_LED_STATE);
         }
+
+        // TODO: Query CCI states?
+
         return;
     }
 
