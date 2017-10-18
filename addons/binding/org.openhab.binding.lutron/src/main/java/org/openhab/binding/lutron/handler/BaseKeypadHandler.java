@@ -40,35 +40,18 @@ import com.google.common.collect.HashBiMap;
 public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected static enum Component implements KeypadComponent {
-        BUTTON1(1, "button1"),
-        LED1(81, "led1");
-
-        private int id;
-        private String channel;
-
-        Component(final int i, final String c) {
-            id = i;
-            channel = c;
-        }
+        // this pseudo-abstract static enum should be "overridden" by subclasses
+        ;
 
         @Override
         public int id() {
-            return this.id;
+            return 0;
         }
 
         @Override
         public String channel() {
-            return this.channel;
+            return null;
         }
-
-        public static boolean isLed(int id) {
-            return (id >= 81 && id <= 95);
-        }
-
-        public static boolean isButton(int id) {
-            return (id >= 1 && id <= 25);
-        }
-
     }
 
     protected static final Integer ACTION_PRESS = 3;
@@ -270,6 +253,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         if (KeypadComponent.isLed(id)) {
             queryDevice(id, ACTION_LED_STATE);
         }
+        // TODO: Add similar query for CCI state
     }
 
     @Override

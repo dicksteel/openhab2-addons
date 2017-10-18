@@ -16,4 +16,8 @@ public interface KeypadComponent {
         return (id >= 1 && id <= 25);
     }
 
+    public static boolean isCCI(int id) {
+        return (id >= 1 && id <= 25);
+    }
+
 }
