@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -39,8 +40,6 @@ import org.openhab.binding.lutron.internal.protocol.LutronOperation;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.istack.internal.NotNull;
 
 /**
  * Handler responsible for communicating with the main Lutron control hub.
@@ -84,7 +83,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         return timeclockId;
     }
 
-    public void setTimeclockId(@NotNull Integer timeclockId) {
+    public void setTimeclockId(@NonNull Integer timeclockId) {
         this.timeclockId = timeclockId;
     }
 
