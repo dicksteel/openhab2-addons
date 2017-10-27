@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -40,7 +41,8 @@ import com.google.common.collect.HashBiMap;
 public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected static enum Component implements KeypadComponent {
-        // this pseudo-abstract static enum should be "overridden" by subclasses
+        // This "pseudo-abstract" static enum should be "overridden" in subclasses
+        // by creating a new COMPONENT enum implementing the KeypadComponent interface.
         ;
 
         @Override
@@ -60,6 +62,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected static final Integer LED_OFF = 0;
     protected static final Integer LED_ON = 1;
+
+    private static final String BUTTON_PRESS = "BUTON_PRESS";
+    private static final String BUTTON_RELEASE = "BUTON_RELEASE";
 
     protected List<KeypadComponent> buttonList = new ArrayList<KeypadComponent>();
     protected List<KeypadComponent> ledList = new ArrayList<KeypadComponent>();
@@ -181,15 +186,13 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             queryDevice(component.id(), ACTION_LED_STATE);
         }
 
-        // TODO: Query CCI states?
-
         return;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, Command command) {
 
-        logger.debug("Command {}  for {}", command, channelUID);
+        logger.debug("Handling command {} for channel {}", command, channelUID);
 
         Channel channel = getThing().getChannel(channelUID.getId());
         if (channel == null) {
@@ -205,6 +208,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
+        // For LEDs, handle RefreshType and OnOffType commands
         if (KeypadComponent.isLed(componentID)) {
             if (command instanceof RefreshType) {
                 queryDevice(componentID, ACTION_LED_STATE);
@@ -217,7 +221,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                 } else if (command == OnOffType.OFF) {
                     device(componentID, ACTION_LED_STATE, LED_OFF);
                 } else {
-                    logger.warn("Assertion failure: OnOffType command state is neither ON nor OFF");
+                    assert false : "OnOffType command state is neither ON nor OFF";
                 }
             } else {
                 logger.warn("Invalid command {} received for channel {} device {}", command, channelUID,
@@ -226,17 +230,36 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
-        if (KeypadComponent.isButton(componentID)) {
-            // TODO: Fix button channel sending
-            // if (command instanceof StringType) {
-            // device(componentID, ACTION_PRESS);
-            // } else {
-            logger.warn("Invalid command {} received for channel {} device {}", command, channelUID,
-                    getThing().getUID());
-            // }
+        // For buttons and CCIs, handle OnOffType and StringType commands
+        if (KeypadComponent.isButton(componentID) || KeypadComponent.isCCI(componentID)) {
+
+            if (command instanceof OnOffType) {
+                // for normal channels
+                if (command == OnOffType.ON) {
+                    device(componentID, ACTION_PRESS);
+                } else if (command == OnOffType.OFF) {
+                    device(componentID, ACTION_RELEASE);
+                }
+                // reset state to OFF whether command was ON or OFF
+                // TODO: fix for CCIs
+                // updateState(channelUID, OnOffType.OFF);
+
+            } else if (command instanceof StringType) {
+                // for trigger channels
+                if (command.toString() == BUTTON_PRESS) {
+                    device(componentID, ACTION_PRESS);
+                } else if (command.toString() == BUTTON_RELEASE) {
+                    device(componentID, ACTION_RELEASE);
+                } else {
+                    logger.warn("Invalid string command {} received for channel {} device {}", command, channelUID,
+                            getThing().getUID());
+                }
+            } else {
+                logger.warn("Invalid command type {} received for channel {} device {}", command, channelUID,
+                        getThing().getUID());
+            }
             return;
         }
-
     }
 
     @Override
@@ -249,11 +272,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
-        // if this channel is for an LED, query the current state
+        // if this channel is for an LED, query the Lutron controller for the current state
         if (KeypadComponent.isLed(id)) {
             queryDevice(id, ACTION_LED_STATE);
         }
-        // TODO: Add similar query for CCI state
+        // Button and CCI state can't be queried, only monitored for updates
     }
 
     @Override
@@ -279,14 +302,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    // postCommand(channelUID, OnOffType.ON);
-                    triggerChannel(channelUID, "BUTTON_PRESS");
+                    triggerChannel(channelUID, BUTTON_PRESS);
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    // postCommand(channelUID, OnOffType.OFF);
-                    triggerChannel(channelUID, "BUTTON_RELEASE");
+                    triggerChannel(channelUID, BUTTON_RELEASE);
                 }
             }
         }
     }
-
 }
