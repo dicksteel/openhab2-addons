@@ -65,7 +65,7 @@ public class LutronBindingConstants {
     public static final String CHANNEL_EXECEVENT = "execevent";
     public static final String CHANNEL_ENABLEEVENT = "enableevent";
     public static final String CHANNEL_STEP = "step";
-    public static final String CHANNEL_TRIGGER = "trigger";
+    public static final String CHANNEL_TRIGGER = "triggeroutput";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
