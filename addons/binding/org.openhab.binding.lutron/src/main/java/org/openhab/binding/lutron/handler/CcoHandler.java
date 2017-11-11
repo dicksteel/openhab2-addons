@@ -40,6 +40,11 @@ public class CcoHandler extends LutronHandler {
     }
 
     @Override
+    public int getIntegrationId() {
+        return this.integrationId;
+    }
+
+    @Override
     public void initialize() {
         Number id = (Number) getThing().getConfiguration().get("integrationId");
         Number defaultPulse = (Number) getThing().getConfiguration().get("defaultPulse");
@@ -63,6 +68,17 @@ public class CcoHandler extends LutronHandler {
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        if (channelUID.getId().equals(CHANNEL_TRIGGER)) {
+            logger.debug("trigger channel {} linked for CCO", channelUID.getId().toString());
+            // since this is a pulsed CCO, channel state is always off
+            updateState(channelUID, OnOffType.OFF);
+        } else {
+            logger.warn("invalid channel {} linked for CCO", channelUID.getId().toString());
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO: Fix for proper channel types & command handling
         // Should support On/Off and Number command types (pulse length)
@@ -74,22 +90,10 @@ public class CcoHandler extends LutronHandler {
     }
 
     @Override
-    public int getIntegrationId() {
-        return this.integrationId;
-    }
-
-    @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
+        // do nothing on update for pulsed CCO
+        // TODO: announce pulse events via channel trigger or command
         logger.debug("Update received for CCO: {} {}", type, StringUtils.join(parameters, ","));
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        if (channelUID.getId().equals(CHANNEL_TRIGGER)) {
-            logger.debug("trigger channel {} linked for CCO", channelUID.getId().toString());
-        } else {
-            // TODO: Can/should we throw an exception here?
-            logger.warn("invalid channel {} linked for CCO", channelUID.getId().toString());
-        }
-    }
 }
