@@ -8,10 +8,17 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
+import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
 import org.slf4j.Logger;
@@ -23,10 +30,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * KodiConnection provides an api for accessing a kodi device.
+ * KodiConnection provides an api for accessing a Kodi device.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  *
  */
 public class KodiConnection implements KodiClientSocketEventListener {
@@ -34,8 +42,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(15)); // 15min
 
     private URI wsUri;
+    private URI imageUri;
     private KodiClientSocket socket;
 
     private int volume = 0;
@@ -57,13 +68,15 @@ public class KodiConnection implements KodiClientSocketEventListener {
         listener.updateConnectionState(true);
     }
 
-    public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler) {
+    public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler, URI imageUri) {
+        this.imageUri = imageUri;
         try {
-            wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
+            close();
+            wsUri = new URI("ws", null, hostName, port, "/jsonrpc", null, null);
             socket = new KodiClientSocket(this, wsUri, scheduler);
-            socket.open();
-        } catch (Throwable t) {
-            logger.error("exception during connect to {}", wsUri.toString(), t);
+            checkConnection();
+        } catch (URISyntaxException e) {
+            logger.error("exception during constructing URI host={}, port={}", hostName, port, e);
         }
     }
 
@@ -211,27 +224,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    private void updateFanartUrl(String imagePath) {
-        if (imagePath == null || imagePath.isEmpty()) {
-            return;
-        }
-
-        /*
-         * try {
-         *
-         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8");
-         * String decodedURL = URLDecoder.decode(imagePath, "UTF-8");
-         *
-         * JsonObject params = new JsonObject();
-         * params.addProperty("path", "");
-         * JsonElement response = socket.callMethod("Files.PrepareDownload", params);
-         *
-         * } catch (Exception e) {
-         * logger.error("updateFanartUrl error", e);
-         * }
-         */
-    }
-
     private void requestPlayerUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
                 "showtitle", "streamdetails", "channel", "channeltype" };
@@ -283,6 +275,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     channel = item.get("channel").getAsString();
                 }
 
+                RawType thumbnail = null;
+                if (item.has("thumbnail")) {
+                    thumbnail = downloadImage(convertToImageUrl(item.get("thumbnail")));
+                }
+
+                RawType fanart = null;
+                if (item.has("fanart")) {
+                    fanart = downloadImage(convertToImageUrl(item.get("fanart")));
+                }
+
                 try {
                     listener.updateAlbum(album);
                     listener.updateTitle(title);
@@ -290,12 +292,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     listener.updateArtist(artist);
                     listener.updateMediaType(mediaType);
                     listener.updatePVRChannel(channel);
+                    listener.updateThumbnail(thumbnail);
+                    listener.updateFanart(fanart);
                 } catch (Exception e) {
                     logger.error("Event listener invoking error", e);
-                }
-
-                if (item.has("fanart")) {
-                    updateFanartUrl(item.get("fanart").getAsString());
                 }
             }
         }
@@ -330,6 +330,42 @@ public class KodiConnection implements KodiClientSocketEventListener {
         // }
     }
 
+    private String convertToImageUrl(JsonElement element) {
+        String text = convertToText(element);
+        if (!text.isEmpty()) {
+            try {
+                // we have to strip ending "/" here because Kodi returns a not valid path and filename
+                // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
+                // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
+                String encodedURL = URLEncoder.encode(StringUtils.stripEnd(text, "/"), "UTF-8");
+                return imageUri.resolve(encodedURL).toString();
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("exception during encoding {}", text, e);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private RawType downloadImage(String url) {
+        if (StringUtils.isNotEmpty(url)) {
+            if (!IMAGE_CACHE.containsKey(url)) {
+                IMAGE_CACHE.put(url, () -> {
+                    logger.debug("Trying to download the content of URL {}", url);
+                    return HttpUtil.downloadImage(url);
+                });
+            }
+            RawType image = IMAGE_CACHE.get(url);
+            if (image == null) {
+                logger.debug("Failed to download the content of URL {}", url);
+                return null;
+            } else {
+                return image;
+            }
+        }
+        return null;
+    }
+
     public KodiState getState() {
         return currentState;
     }
@@ -349,6 +385,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateArtist("");
                 listener.updateMediaType("");
                 listener.updatePVRChannel("");
+                listener.updateThumbnail(null);
+                listener.updateFanart(null);
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
@@ -472,7 +510,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void close() {
-        socket = null;
+        if (socket != null && socket.isConnected()) {
+            socket.close();
+        }
     }
 
     public synchronized void updateVolume() {
@@ -583,21 +623,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public boolean checkConnection() {
         if (!socket.isConnected()) {
-            logger.debug("checkConnection: try to connect to kodi {}", wsUri.toString());
+            logger.debug("checkConnection: try to connect to Kodi {}", wsUri);
             try {
                 socket.open();
                 return socket.isConnected();
-            } catch (Throwable t) {
-                logger.error("exception during connect to {}", wsUri.toString(), t);
-                try {
-                    socket.close();
-                } catch (Exception e) {
-                }
+            } catch (Exception e) {
+                logger.error("exception during connect to {}", wsUri, e);
+                socket.close();
                 return false;
             }
         } else {
-            // Ping kodi with the get version command. This prevents the idle
-            // timeout on the websocket
+            // Ping Kodi with the get version command. This prevents the idle
+            // timeout on the websocket.
             return !getVersion().isEmpty();
         }
     }
