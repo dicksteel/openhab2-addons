@@ -212,6 +212,11 @@
                 <label>Keypad Model</label>
                 <description>Keypad model number without the prefix</description>
             </parameter>
+            <parameter name="autorelease" type="boolean" required="false">
+                <label>Auto-release</label>
+                <description>Automatically release pressed buttons</description>
+                <default>false</default>
+            </parameter>
         </config-description>
     </thing-type>
 
@@ -232,6 +237,11 @@
                 <label>Pico Model</label>
                 <description>Pico model number without the prefix</description>
             </parameter>
+            <parameter name="autorelease" type="boolean" required="false">
+                <label>Auto-release</label>
+                <description>Automatically release pressed buttons</description>
+                <default>false</default>
+            </parameter>
         </config-description>
     </thing-type>
 
@@ -251,6 +261,11 @@
             <parameter name="model" type="text" required="false">
                 <label>Model</label>
                 <description>VCRX model number</description>
+            </parameter>
+            <parameter name="autorelease" type="boolean" required="false">
+                <label>Auto-release</label>
+                <description>Automatically release pressed buttons</description>
+                <default>false</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -574,19 +589,6 @@
         <category>Switch</category>
     </channel-type>
 
-    <!-- button event channel type used by ttkeypad handler -->
-    <channel-type id="buttonEvent">
-            <kind>trigger</kind>
-        <label>Button event</label>
-        <description>Button activation event</description>
-        <event>
-            <options>
-                <option value="BUTTON_PRESS">press</option>
-                <option value="BUTTON_RELEASE">release</option>
-            </options>
-        </event>
-    </channel-type>
-    
    <!-- channel type used by pulsed cco handler -->
     <channel-type id="triggerOutput">
         <item-type>Switch</item-type>

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -63,9 +62,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected static final Integer LED_OFF = 0;
     protected static final Integer LED_ON = 1;
 
-    private static final String BUTTON_PRESS = "BUTON_PRESS";
-    private static final String BUTTON_RELEASE = "BUTON_RELEASE";
-
     protected List<KeypadComponent> buttonList = new ArrayList<KeypadComponent>();
     protected List<KeypadComponent> ledList = new ArrayList<KeypadComponent>();
     protected List<KeypadComponent> cciList = new ArrayList<KeypadComponent>(); // for VCRX
@@ -73,6 +69,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected int integrationId;
 
     protected String model;
+
+    protected Boolean autoRelease;
 
     protected BiMap<Integer, String> ComponentChannelMap = HashBiMap.create(50);
 
@@ -94,23 +92,21 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
         // add channels for buttons
         for (KeypadComponent component : buttonList) {
-            // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
-            channelTypeUID = new ChannelTypeUID(BINDING_ID, "buttonEvent");
-            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "String")
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, "button");
+            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
                     .withType(channelTypeUID).build();
             channelList.add(channel);
         }
 
         // add channels for LEDs
         for (KeypadComponent component : ledList) {
-            // channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":" + component.channel());
             channelTypeUID = new ChannelTypeUID(BINDING_ID, "ledIndicator");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
                     .withType(channelTypeUID).build();
             channelList.add(channel);
         }
 
-        // add channels for CCIs (for VCRX)
+        // add channels for CCIs (for VCRX or eventually HomeWorks CCI)
         for (KeypadComponent component : cciList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, "cciState");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Contact")
@@ -164,6 +160,13 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             }
         }
 
+        Boolean ar = (Boolean) getThing().getConfiguration().get("autorelease");
+        if (ar == null) {
+            this.autoRelease = false;
+        } else {
+            this.autoRelease = ar;
+        }
+
         configureComponents(this.model);
 
         // load the channel-id map
@@ -209,6 +212,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
 
         // For LEDs, handle RefreshType and OnOffType commands
+        // TODO: Add support for flash & fastflash string commands for appropriate keypad models
         if (KeypadComponent.isLed(componentID)) {
             if (command instanceof RefreshType) {
                 queryDevice(componentID, ACTION_LED_STATE);
@@ -230,29 +234,17 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
-        // For buttons and CCIs, handle OnOffType and StringType commands
+        // For buttons and CCIs, handle OnOffType commands
         if (KeypadComponent.isButton(componentID) || KeypadComponent.isCCI(componentID)) {
 
             if (command instanceof OnOffType) {
-                // for normal channels
                 if (command == OnOffType.ON) {
                     device(componentID, ACTION_PRESS);
+                    if (this.autoRelease) {
+                        device(componentID, ACTION_RELEASE);
+                    }
                 } else if (command == OnOffType.OFF) {
                     device(componentID, ACTION_RELEASE);
-                }
-                // reset state to OFF whether command was ON or OFF
-                // TODO: fix for CCIs
-                // updateState(channelUID, OnOffType.OFF);
-
-            } else if (command instanceof StringType) {
-                // for trigger channels
-                if (command.toString() == BUTTON_PRESS) {
-                    device(componentID, ACTION_PRESS);
-                } else if (command.toString() == BUTTON_RELEASE) {
-                    device(componentID, ACTION_RELEASE);
-                } else {
-                    logger.warn("Invalid string command {} received for channel {} device {}", command, channelUID,
-                            getThing().getUID());
                 }
             } else {
                 logger.warn("Invalid command type {} received for channel {} device {}", command, channelUID,
@@ -276,7 +268,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         if (KeypadComponent.isLed(id)) {
             queryDevice(id, ACTION_LED_STATE);
         }
-        // Button and CCI state can't be queried, only monitored for updates
+        // Button and CCI state can't be queried, only monitored for updates.
+        // Init button states to OFF on channel init.
+        if (KeypadComponent.isButton(id)) {
+            updateState(channelUID, OnOffType.OFF);
+        }
+        // Leave CCI channel state undefined on channel init.
     }
 
     @Override
@@ -302,11 +299,15 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    triggerChannel(channelUID, BUTTON_PRESS);
+                    updateState(channelUID, OnOffType.ON);
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    triggerChannel(channelUID, BUTTON_RELEASE);
+                    updateState(channelUID, OnOffType.OFF);
                 }
+            } else {
+                this.logger.warn("Unable to determine channel for component {} in keypad update event message",
+                        parameters[0]);
             }
         }
     }
+
 }
