@@ -143,6 +143,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     @Override
     public void initialize() {
+        // TODO: Configure channels asynchronously because it is taking slightly over 5 seconds
         Number id = (Number) getThing().getConfiguration().get("integrationId");
         this.logger.debug("Initializing Keypad Handler for integration ID {}", id);
 
@@ -258,7 +259,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        this.logger.debug("Linking keypad channel {}", channelUID.getId());
+        this.logger.debug("Linking keypad {} channel {}", integrationId, channelUID.getId());
 
         Integer id = componentFromChannel(channelUID);
         if (id == null) {
@@ -280,7 +281,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        this.logger.debug("Handling command {} {} from keypad", type.toString(), parameters);
+        this.logger.debug("Handling command {} {} from keypad {}", type.toString(), parameters, integrationId);
         if (type == LutronCommandType.DEVICE && parameters.length >= 2) {
             int component;
 
