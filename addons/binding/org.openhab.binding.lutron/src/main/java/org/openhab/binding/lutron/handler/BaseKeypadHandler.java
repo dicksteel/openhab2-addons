@@ -61,6 +61,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected static final Integer LED_OFF = 0;
     protected static final Integer LED_ON = 1;
+    protected static final Integer LED_FLASH = 2;
+    protected static final Integer LED_RAPIDFLASH = 3;
 
     protected List<KeypadComponent> buttonList = new ArrayList<KeypadComponent>();
     protected List<KeypadComponent> ledList = new ArrayList<KeypadComponent>();
@@ -269,7 +271,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             queryDevice(id, ACTION_LED_STATE);
         }
         // Button and CCI state can't be queried, only monitored for updates.
-        // Init button states to OFF on channel init.
+        // Init button state to OFF on channel init.
         if (KeypadComponent.isButton(id)) {
             updateState(channelUID, OnOffType.OFF);
         }
@@ -298,6 +300,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     } else if (LED_OFF.toString().equals(parameters[2])) {
                         updateState(channelUID, OnOffType.OFF);
                     }
+                    // TODO: Handle LED_FLASH and LED_RAPIDFLASH states
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.ON);
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
