@@ -90,7 +90,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         List<Channel> channelList = new ArrayList<Channel>();
         ThingBuilder thingBuilder = editThing();
 
-        logger.debug("Configuring channels for keypad");
+        logger.debug("Configuring channels for keypad {}", integrationId);
 
         // add channels for buttons
         for (KeypadComponent component : buttonList) {
@@ -163,11 +163,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             }
         }
 
-        Boolean ar = (Boolean) getThing().getConfiguration().get("autorelease");
-        if (ar == null) {
-            this.autoRelease = false;
+        Boolean arParam = (Boolean) getThing().getConfiguration().get("autorelease");
+        if (arParam == null) {
+            this.autoRelease = true;
         } else {
-            this.autoRelease = ar;
+            this.autoRelease = arParam;
         }
 
         configureComponents(this.model);
@@ -192,6 +192,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             queryDevice(component.id(), ACTION_LED_STATE);
         }
 
+        return;
+    }
+
+    @Override
+    public void dispose() {
+        // TODO: Delete channels? Getting duplicate channel exceptions on re-init.
         return;
     }
 
@@ -304,6 +310,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     // TODO: Handle LED_FLASH and LED_RAPIDFLASH states
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.ON);
+                    if (this.autoRelease) {
+                        updateState(channelUID, OnOffType.OFF);
+                    }
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.OFF);
                 }

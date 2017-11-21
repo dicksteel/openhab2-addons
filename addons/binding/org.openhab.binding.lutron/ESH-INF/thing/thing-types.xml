@@ -215,7 +215,7 @@
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
                 <description>Automatically release pressed buttons</description>
-                <default>false</default>
+                <default>true</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -240,7 +240,7 @@
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
                 <description>Automatically release pressed buttons</description>
-                <default>false</default>
+                <default>true</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -265,7 +265,7 @@
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
                 <description>Automatically release pressed buttons</description>
-                <default>false</default>
+                <default>true</default>
             </parameter>
         </config-description>
     </thing-type>
