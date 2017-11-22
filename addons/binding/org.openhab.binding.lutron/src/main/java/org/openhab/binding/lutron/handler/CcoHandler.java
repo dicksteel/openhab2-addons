@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.lutron.handler;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_TRIGGER;
+import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_SWITCH;
+
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -22,11 +24,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler responsible for communicating with Lutron pulsed CCO outputs.
- * e.g. VCRX outputs and CCO module outputs
+ * Handler responsible for communicating with Lutron pulsed cold contact outputs (CCOs).
+ * e.g. VCRX CCO outputs and CCO RF module outputs
  *
  * @author Bob Adair - Initial contribution
  */
+
+// Note: For a RA2 Pulsed CCO, querying the output state with ?OUTPUT,<id>,1 is meaningless and will always
+// return 100 (on). Also, the main repeater will not report ~OUTPUT commands for a pulsed CCO regardless of
+// the #MONITORING setting. So this binding supports sending pulses ONLY.
+
 public class CcoHandler extends LutronHandler {
     private static final Integer ACTION_PULSE = 6;
 
@@ -59,40 +66,38 @@ public class CcoHandler extends LutronHandler {
             double dp = defaultPulse.doubleValue();
             if (dp >= 0 && dp <= 100.0) {
                 this.defaultPulse = dp;
-                logger.info("Default pulse length set to {} seconds", defaultPulse.toString());
+                logger.info("Pulse length set to {} seconds for device {}.", defaultPulse.toString(), integrationId);
             } else {
-                logger.warn("Invalid default pulse length value set. Defaulting to 0.5s.");
+                logger.warn("Invalid pulse length value set. Using default for device {}.", integrationId);
             }
+        } else {
+            logger.debug("Using default pulse length value for device {}", integrationId);
         }
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        if (channelUID.getId().equals(CHANNEL_TRIGGER)) {
-            logger.debug("trigger channel {} linked for CCO", channelUID.getId().toString());
-            // since this is a pulsed CCO, channel state is always off
+        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+            logger.debug("switch channel {} linked for CCO {}", channelUID.getId().toString(), integrationId);
+            // Since this is a pulsed CCO channel state is always OFF
             updateState(channelUID, OnOffType.OFF);
         } else {
-            logger.warn("invalid channel {} linked for CCO", channelUID.getId().toString());
+            logger.warn("invalid channel {} linked for CCO {}", channelUID.getId().toString(), integrationId);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO: Fix for proper channel types & command handling
-        // Should support On/Off and Number command types (pulse length)
         if (command instanceof OnOffType && command == OnOffType.ON) {
-            // TODO: Get pulse length from defaultPulse or channel
-            output(ACTION_PULSE, 0.5);
+            output(ACTION_PULSE, String.format(Locale.ROOT, "%.2f", defaultPulse));
             updateState(channelUID, OnOffType.OFF);
         }
     }
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        // do nothing on update for pulsed CCO
-        // TODO: announce pulse events via channel trigger or command
+        // Do nothing on update for pulsed CCO. Repeater will only echo back our own output commands.
         logger.debug("Update received for CCO: {} {}", type, StringUtils.join(parameters, ","));
     }
 

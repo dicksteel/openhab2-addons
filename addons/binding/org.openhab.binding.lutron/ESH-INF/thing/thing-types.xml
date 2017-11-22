@@ -83,7 +83,7 @@
         <description>Pulsed CCO Output</description>
 
         <channels>
-            <channel id="triggeroutput" typeId="triggerOutput"/>
+            <channel id="switchstatus" typeId="switchState"/>
         </channels>
 
         <config-description>
@@ -589,14 +589,15 @@
         <category>Switch</category>
     </channel-type>
 
-   <!-- channel type used by pulsed cco handler -->
+<!-- channel type used by pulsed cco handler
     <channel-type id="triggerOutput">
         <item-type>Switch</item-type>
         <label>Trigger Pulse</label>
         <description>Trigger CCO pulse</description>
         <category>Switch</category>
     </channel-type>
-    
+-->
+
     <channel-type id="ledIndicator">
         <item-type>Switch</item-type>
         <label>Keypad button LED indicator</label>
