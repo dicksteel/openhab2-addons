@@ -12,6 +12,7 @@ import static org.openhab.binding.lutron.LutronBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -143,15 +144,14 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     @Override
     public void initialize() {
-        // TODO: Configure channels asynchronously because it is taking slightly over 5 seconds
         Number id = (Number) getThing().getConfiguration().get("integrationId");
-        this.logger.debug("Initializing Keypad Handler for integration ID {}", id);
-
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
             return;
         }
         this.integrationId = id.intValue();
+
+        this.logger.debug("Initializing Keypad Handler for integration ID {}", id);
 
         this.model = (String) getThing().getConfiguration().get("model");
         if (this.model != null) {
@@ -170,6 +170,17 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             this.autoRelease = arParam;
         }
 
+        // now schedule a thread to finish initialization asynchronously
+        this.scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                asyncInitialize();
+            }
+        }, 0, TimeUnit.SECONDS);
+    }
+
+    private synchronized void asyncInitialize() {
+        this.logger.debug("Async init thread staring for keypad handler {}", integrationId);
         configureComponents(this.model);
 
         // load the channel-id map
@@ -192,6 +203,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             queryDevice(component.id(), ACTION_LED_STATE);
         }
 
+        this.logger.debug("Async init thread finishing for keypad handler {}", integrationId);
         return;
     }
 

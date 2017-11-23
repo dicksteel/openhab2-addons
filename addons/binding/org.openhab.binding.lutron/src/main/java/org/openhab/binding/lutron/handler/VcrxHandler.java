@@ -89,7 +89,7 @@ public class VcrxHandler extends BaseKeypadHandler {
     @Override
     protected void configureComponents(String model) {
         model = model == null ? "null" : model;
-        this.logger.debug("Configuring components VCRX");
+        this.logger.debug("Configuring components for VCRX");
 
         buttonList.addAll(buttonGroup);
         ledList.addAll(ledGroup);
