@@ -209,7 +209,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     @Override
     public void dispose() {
-        // TODO: Delete channels? Getting duplicate channel exceptions on re-init.
         return;
     }
 
@@ -233,7 +232,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
 
         // For LEDs, handle RefreshType and OnOffType commands
-        // TODO: Add support for flash & fastflash string commands for appropriate keypad models
+        // TODO: Add support for FLASH & RAPIDFLASH string commands for appropriate keypad models
         if (KeypadComponent.isLed(componentID)) {
             if (command instanceof RefreshType) {
                 queryDevice(componentID, ACTION_LED_STATE);
