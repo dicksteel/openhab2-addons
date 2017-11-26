@@ -74,13 +74,13 @@
         </config-description>
     </thing-type>
 
-    <thing-type id="ccopulsed">
+    <thing-type id="cco">
         <supported-bridge-type-refs>
             <bridge-type-ref id="ipbridge"/>
         </supported-bridge-type-refs>
 
-        <label>Pulsed CCO</label>
-        <description>Pulsed CCO Output</description>
+        <label>CCO</label>
+        <description>Cold Contact Output</description>
 
         <channels>
             <channel id="switchstatus" typeId="switchState"/>
@@ -91,15 +91,68 @@
                 <label>Integration ID</label>
                 <description>Address of CCO in the Lutron control system</description>
             </parameter>
-                <parameter name="defaultPulse" type="integer">
+            <parameter name="defaultPulse" type="integer">
                 <label>Pulse Length</label>
                 <description>Default pulse length in seconds (0.1 - 100)</description>
                 <default>0.5</default>
             </parameter>
-            
+            <parameter name="outputType" type="text" required="true">
+                <label>Output Type</label>
+                <description>CCO Output Type</description>
+                <options>
+                    <option value="Pulsed">Pulsed</option>
+                    <option value="Maintained">Maintained</option>
+                </options>
+                <limitToOptions>true</limitToOptions>
+                <default>Pulsed</default>
+            </parameter>
         </config-description>
     </thing-type>
 
+    <thing-type id="ccopulsed">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Pulsed CCO</label>
+        <description>Pulsed Cold Contact Output</description>
+
+        <channels>
+            <channel id="switchstatus" typeId="switchState"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of CCO in the Lutron control system</description>
+            </parameter>
+            <parameter name="defaultPulse" type="integer">
+                <label>Pulse Length</label>
+                <description>Default pulse length in seconds (0.1 - 100)</description>
+                <default>0.5</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="ccomaintained">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Maintained CCO</label>
+        <description>Maintained Cold Contact Output</description>
+
+        <channels>
+            <channel id="switchstatus" typeId="switchState"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of CCO in the Lutron control system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 
     <thing-type id="occupancysensor">
         <supported-bridge-type-refs>

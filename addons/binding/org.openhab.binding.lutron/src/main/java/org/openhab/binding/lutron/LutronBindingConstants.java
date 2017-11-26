@@ -33,7 +33,9 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
     public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
     public static final ThingTypeUID THING_TYPE_VCRX = new ThingTypeUID(BINDING_ID, "vcrx");
+    public static final ThingTypeUID THING_TYPE_CCO = new ThingTypeUID(BINDING_ID, "cco");
     public static final ThingTypeUID THING_TYPE_CCO_PULSED = new ThingTypeUID(BINDING_ID, "ccopulsed");
+    public static final ThingTypeUID THING_TYPE_CCO_MAINTAINED = new ThingTypeUID(BINDING_ID, "ccomaintained");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -74,4 +76,10 @@ public class LutronBindingConstants {
 
     // Thing config properties
     public static final String INTEGRATION_ID = "integrationId";
+
+    // CCO config properties
+    public static final String OUTPUT_TYPE = "outputType";
+    public static final String OUTPUT_TYPE_PULSED = "Pulsed";
+    public static final String OUTPUT_TYPE_MAINTAINED = "Maintained";
+    public static final String DEFAULT_PULSE = "defaultPulse";
 }

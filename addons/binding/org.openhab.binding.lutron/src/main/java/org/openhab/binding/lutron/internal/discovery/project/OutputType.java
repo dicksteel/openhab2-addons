@@ -20,5 +20,6 @@ public enum OutputType {
     NON_DIM_INC,
     AUTO_DETECT,
     CCO_PULSED,
+    CCO_MAINTAINED,
     SYSTEM_SHADE
 }

@@ -194,6 +194,11 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 case CCO_PULSED:
                     notifyDiscovery(THING_TYPE_CCO_PULSED, output.getIntegrationId(), label);
+                    break;
+
+                case CCO_MAINTAINED:
+                    notifyDiscovery(THING_TYPE_CCO_MAINTAINED, output.getIntegrationId(), label);
+                    break;
 
                 case SYSTEM_SHADE:
                     // TODO: Handle SYSTEM_SHADE
