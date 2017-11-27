@@ -166,7 +166,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     break;
 
                 case MAIN_REPEATER:
-                    // Ignore bridges
+                    notifyDiscovery(THING_TYPE_VIRTUALKEYPAD, device.getIntegrationId(), label);
                     break;
             }
         } else {
@@ -213,7 +213,6 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
         String label = generateLabel(context, timeclock.getName());
         notifyDiscovery(THING_TYPE_TIMECLOCK, timeclock.getIntegrationId(), label);
-        // logger.warn("Unrecognized timeclock type {}", timeclock.getType());
     }
 
     private void processGreenModes(GreenMode greenmode, Stack<String> context) {

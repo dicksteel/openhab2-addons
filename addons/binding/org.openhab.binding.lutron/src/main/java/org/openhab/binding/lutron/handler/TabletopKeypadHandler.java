@@ -93,6 +93,10 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
             return (id >= 1 && id <= 25);
         }
 
+        public static boolean isCCI(int id) {
+            return false;
+        }
+
     }
 
     private static final List<COMPONENT> buttonGroup1 = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON2,

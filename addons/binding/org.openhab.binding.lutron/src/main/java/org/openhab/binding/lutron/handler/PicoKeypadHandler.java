@@ -62,6 +62,10 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
             return (id >= 2 && id <= 11);
         }
 
+        public static boolean isCCI(int id) {
+            return false;
+        }
+
     }
 
     private Logger logger = LoggerFactory.getLogger(PicoKeypadHandler.class);

@@ -30,6 +30,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
     public static final ThingTypeUID THING_TYPE_TTKEYPAD = new ThingTypeUID(BINDING_ID, "ttkeypad");
     public static final ThingTypeUID THING_TYPE_PICO = new ThingTypeUID(BINDING_ID, "pico");
+    public static final ThingTypeUID THING_TYPE_VIRTUALKEYPAD = new ThingTypeUID(BINDING_ID, "virtualkeypad");
     public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
     public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
     public static final ThingTypeUID THING_TYPE_VCRX = new ThingTypeUID(BINDING_ID, "vcrx");
