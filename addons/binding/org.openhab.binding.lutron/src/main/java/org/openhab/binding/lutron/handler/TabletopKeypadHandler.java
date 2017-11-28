@@ -85,18 +85,6 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
             return this.channel;
         }
 
-        public static boolean isLed(int id) {
-            return (id >= 81 && id <= 95);
-        }
-
-        public static boolean isButton(int id) {
-            return (id >= 1 && id <= 25);
-        }
-
-        public static boolean isCCI(int id) {
-            return false;
-        }
-
     }
 
     private static final List<COMPONENT> buttonGroup1 = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON2,
@@ -121,13 +109,28 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
     private Logger logger = LoggerFactory.getLogger(TabletopKeypadHandler.class);
 
     @Override
+    protected boolean isLed(int id) {
+        return (id >= 81 && id <= 95);
+    }
+
+    @Override
+    protected boolean isButton(int id) {
+        return (id >= 1 && id <= 25);
+    }
+
+    @Override
+    protected boolean isCCI(int id) {
+        return false;
+    }
+
+    @Override
     protected void configureComponents(String model) {
-        model = model == null ? "null" : model;
+        String mod = model == null ? "null" : model;
         this.logger.debug("Configuring components for keypad model {}", model);
 
-        switch (model) {
+        switch (mod) {
             default:
-                this.logger.warn("No valid keypad model defined ({}). Assuming model T15RL.", model);
+                this.logger.warn("No valid keypad model defined ({}). Assuming model T15RL.", mod);
             case "T15RL":
                 buttonList.addAll(buttonGroup3);
                 ledList.addAll(ledGroup3);

@@ -334,7 +334,7 @@
         <config-description>
             <parameter name="integrationId" type="integer" required="true">
                 <label>Integration ID</label>
-                <description>Address of VCRX in the Lutron control system</description>
+                <description>Address in the Lutron control system</description>
             </parameter>
             <parameter name="model" type="text" required="false">
                 <label>Model</label>
@@ -347,7 +347,6 @@
             </parameter>
         </config-description>
     </thing-type>
-
 
     <thing-type id="timeclock">
         <supported-bridge-type-refs>
@@ -668,11 +667,32 @@
         <category>Switch</category>
     </channel-type>
 
+    <channel-type id="buttonAdvanced" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Keypad button</label>
+        <description>Button to trigger a scene or rule</description>
+        <category>Switch</category>
+    </channel-type>
+
     <channel-type id="ledIndicator">
         <item-type>Switch</item-type>
         <label>Keypad button LED indicator</label>
         <description>LED indicator for the associated button</description>
         <category>Light</category>
+    </channel-type>
+
+    <channel-type id="ledIndicatorAdvanced" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Keypad button LED indicator</label>
+        <description>LED indicator for the associated button</description>
+        <category>Light</category>
+    </channel-type>
+
+    <channel-type id="cciState" advanced="true">
+        <item-type>Contact</item-type>
+        <label>CCI</label>
+        <description>Cold contact input</description>
+        <category>Switch</category>
     </channel-type>
 
     <channel-type id="buttonpress">

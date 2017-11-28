@@ -54,18 +54,6 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
             return this.channel;
         }
 
-        public static boolean isLed(int id) {
-            return false; // No LEDs on Picos
-        }
-
-        public static boolean isButton(int id) {
-            return (id >= 2 && id <= 11);
-        }
-
-        public static boolean isCCI(int id) {
-            return false;
-        }
-
     }
 
     private Logger logger = LoggerFactory.getLogger(PicoKeypadHandler.class);
@@ -75,11 +63,26 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
     }
 
     @Override
-    protected void configureComponents(String model) {
-        model = model == null ? "null" : model;
-        this.logger.debug("Configuring components for keypad model {}", model);
+    protected boolean isLed(int id) {
+        return false; // No LEDs on Picos
+    }
 
-        switch (model) {
+    @Override
+    protected boolean isButton(int id) {
+        return (id >= 2 && id <= 11);
+    }
+
+    @Override
+    protected boolean isCCI(int id) {
+        return false;
+    }
+
+    @Override
+    protected void configureComponents(String model) {
+        String mod = model == null ? "null" : model;
+        this.logger.debug("Configuring components for keypad model {}", mod);
+
+        switch (mod) {
             case "2B":
                 buttonList = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON3);
                 break;
@@ -94,7 +97,7 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
                         COMPONENT.BUTTON04);
                 break;
             default:
-                this.logger.warn("No valid keypad model defined ({}). Assuming model 3BRL.", model);
+                this.logger.warn("No valid keypad model defined ({}). Assuming model 3BRL.", mod);
             case "3BRL":
                 buttonList = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON2, COMPONENT.BUTTON3, COMPONENT.RAISE,
                         COMPONENT.LOWER);

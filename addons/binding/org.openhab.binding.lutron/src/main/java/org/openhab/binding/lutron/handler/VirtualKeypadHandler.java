@@ -232,36 +232,39 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
         public String channel() {
             return this.channel;
         }
-
-        public static boolean isLed(int id) {
-            return (id >= 101 && id <= 200);
-        }
-
-        public static boolean isButton(int id) {
-            return (id >= 1 && id <= 100);
-        }
-
-        public static boolean isCCI(int id) {
-            return false;
-        }
     }
 
     private Logger logger = LoggerFactory.getLogger(VirtualKeypadHandler.class);
 
     @Override
+    protected boolean isLed(int id) {
+        return (id >= 101 && id <= 200);
+    }
+
+    @Override
+    protected boolean isButton(int id) {
+        return (id >= 1 && id <= 100);
+    }
+
+    @Override
+    protected boolean isCCI(int id) {
+        return false;
+    }
+
+    @Override
     protected void configureComponents(String model) {
         String mod = model == null ? "null" : model;
         this.logger.debug("Configuring components for keypad model {}", mod);
-
+        // TODO: Check on other repeater models
         switch (mod) {
             default:
                 this.logger.warn("No valid model defined ({}). Assuming model RR-MAIN-REP.", mod);
             case "MAIN-REP":
                 for (COMPONENT x : EnumSet.allOf(COMPONENT.class)) {
-                    if (COMPONENT.isLed(x.id)) {
+                    if (isLed(x.id)) {
                         ledList.add(x);
                     }
-                    if (COMPONENT.isButton(x.id)) {
+                    if (isButton(x.id)) {
                         buttonList.add(x);
                     }
                 }
@@ -271,7 +274,8 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
 
     public VirtualKeypadHandler(Thing thing) {
         super(thing);
-        // TODO: Set flag to mark all channels as "Advanced"
+        // Mark all channels "Advanced" since most are unlikely to be used in any particular config
+        this.advancedChannels = true;
     }
 
 }

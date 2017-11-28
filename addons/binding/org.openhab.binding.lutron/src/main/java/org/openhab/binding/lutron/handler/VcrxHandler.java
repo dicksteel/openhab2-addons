@@ -61,18 +61,6 @@ public class VcrxHandler extends BaseKeypadHandler {
             return this.channel;
         }
 
-        public static boolean isLed(int id) {
-            return (id >= 81 && id <= 86);
-        }
-
-        public static boolean isButton(int id) {
-            return (id >= 1 && id <= 6);
-        }
-
-        public static boolean isCCI(int id) {
-            return (id >= 30 && id <= 33);
-        }
-
     }
 
     private static final List<COMPONENT> buttonGroup = Arrays.asList(COMPONENT.BUTTON1, COMPONENT.BUTTON2,
@@ -87,8 +75,22 @@ public class VcrxHandler extends BaseKeypadHandler {
     private Logger logger = LoggerFactory.getLogger(VcrxHandler.class);
 
     @Override
+    protected boolean isLed(int id) {
+        return (id >= 81 && id <= 86);
+    }
+
+    @Override
+    protected boolean isButton(int id) {
+        return (id >= 1 && id <= 6);
+    }
+
+    @Override
+    protected boolean isCCI(int id) {
+        return (id >= 30 && id <= 33);
+    }
+
+    @Override
     protected void configureComponents(String model) {
-        model = model == null ? "null" : model;
         this.logger.debug("Configuring components for VCRX");
 
         buttonList.addAll(buttonGroup);

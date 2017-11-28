@@ -70,16 +70,21 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected List<KeypadComponent> cciList = new ArrayList<KeypadComponent>(); // for VCRX
 
     protected int integrationId;
-
     protected String model;
-
     protected Boolean autoRelease;
+    protected Boolean advancedChannels = false;
 
     protected BiMap<Integer, String> ComponentChannelMap = HashBiMap.create(50);
 
     private Logger logger = LoggerFactory.getLogger(BaseKeypadHandler.class);
 
     protected abstract void configureComponents(String model);
+
+    protected abstract boolean isLed(int id);
+
+    protected abstract boolean isButton(int id);
+
+    protected abstract boolean isCCI(int id);
 
     public BaseKeypadHandler(Thing thing) {
         super(thing);
@@ -95,7 +100,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
         // add channels for buttons
         for (KeypadComponent component : buttonList) {
-            channelTypeUID = new ChannelTypeUID(BINDING_ID, "button");
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "buttonAdvanced" : "button");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
                     .withType(channelTypeUID).build();
             channelList.add(channel);
@@ -103,7 +108,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
         // add channels for LEDs
         for (KeypadComponent component : ledList) {
-            channelTypeUID = new ChannelTypeUID(BINDING_ID, "ledIndicator");
+            channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "ledIndicatorAdvanced" : "ledIndicator");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
                     .withType(channelTypeUID).build();
             channelList.add(channel);
@@ -199,9 +204,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         updateStatus(ThingStatus.ONLINE);
 
         // query the status of all keypad LEDs
-        for (KeypadComponent component : ledList) {
-            queryDevice(component.id(), ACTION_LED_STATE);
-        }
+        // for (KeypadComponent component : ledList) {
+        // queryDevice(component.id(), ACTION_LED_STATE);
+        // }
 
         this.logger.debug("Async init thread finishing for keypad handler {}", integrationId);
         return;
@@ -233,7 +238,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
         // For LEDs, handle RefreshType and OnOffType commands
         // TODO: Add support for FLASH & RAPIDFLASH string commands for appropriate keypad models
-        if (KeypadComponent.isLed(componentID)) {
+        if (isLed(componentID)) {
             if (command instanceof RefreshType) {
                 queryDevice(componentID, ACTION_LED_STATE);
                 return;
@@ -255,7 +260,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
 
         // For buttons and CCIs, handle OnOffType commands
-        if (KeypadComponent.isButton(componentID) || KeypadComponent.isCCI(componentID)) {
+        if (isButton(componentID) || isCCI(componentID)) {
 
             if (command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
@@ -285,12 +290,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
 
         // if this channel is for an LED, query the Lutron controller for the current state
-        if (KeypadComponent.isLed(id)) {
+        if (isLed(id)) {
             queryDevice(id, ACTION_LED_STATE);
         }
         // Button and CCI state can't be queried, only monitored for updates.
         // Init button state to OFF on channel init.
-        if (KeypadComponent.isButton(id)) {
+        if (isButton(id)) {
             updateState(channelUID, OnOffType.OFF);
         }
         // Leave CCI channel state undefined on channel init.
