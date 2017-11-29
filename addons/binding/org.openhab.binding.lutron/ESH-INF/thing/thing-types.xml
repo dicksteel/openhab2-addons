@@ -263,7 +263,16 @@
             </parameter>
             <parameter name="model" type="text" required="false">
                 <label>Keypad Model</label>
-                <description>Keypad model number without the prefix</description>
+                <description>Keypad model number without the system prefix</description>
+                <options>
+                    <option value="T5RL">T5RL</option>
+                    <option value="T10RL">T10RL</option>
+                    <option value="T15RL">T15RL</option>
+                    <option value="T5CRL">T5CRL</option>
+                    <option value="T10CRL">T10CRL</option>
+                    <option value="T15CRL">T15CRL</option>
+                </options>
+                <default>T15RL</default>
             </parameter>
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
@@ -288,7 +297,15 @@
             </parameter>
             <parameter name="model" type="text" required="false">
                 <label>Pico Model</label>
-                <description>Pico model number without the prefix</description>
+                <description>Pico model number without the system prefix</description>
+                <options>
+                    <option value="2B">2B</option>
+                    <option value="2BRL">2BRL</option>
+                    <option value="3B">3B</option>
+                    <option value="3BRL">3BRL</option>
+                    <option value="4B">4B</option>
+                </options>
+                <default>3BRL</default>
             </parameter>
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
