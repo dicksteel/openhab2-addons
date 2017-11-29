@@ -95,7 +95,7 @@ The binding creates one occupancystatus channel, Item type Switch, category Moti
 
 ### SeeTouch and Hybrid SeeTouch Keypads
 
-SeeTouch and Hybrid SeeTouch keypads use the keypad thing.  In addition to the usual inegrationID parameter, they expect model and autorelease parameters. The model parameter should be set to the keypad model.  This will cause the handler to create only the appropriate channels for that particular keypad model.  The default is "Generic", which will cause the handler to create all possible channels, some of which will likely not be appropriate for your model.
+SeeTouch and Hybrid SeeTouch keypads are interfaced with using the keypad thing.  In addition to the usual inegrationID parameter, they expect model and autorelease parameters. The model parameter should be set to the Lutron keypad model number.  This will cause the handler to create only the appropriate channels for that particular keypad model.  The default is "Generic", which will cause the handler to create all possible channels, some of which will likely not be appropriate for your model.
 
 The autorelease parameter is a boolean.  Setting it to true will cause each button channel state to transition back to OFF (released) automatically after a going to ON when a button is pressed.  Normally, a Lutron keypad will send a "pressed" event when a button is pressed, and a "released" event when it is released.  The handler will set the button channel state to ON when it receives the "pressed" event, and "off" when it receives the "released" event. This allows you to take actions on both state changes.  However, some integration applications such as Lutron Home+ only cause a "pressed" event to be generated when remotely "pressing" a button. A "release" is never sent, therefore the button channel would become "stuck" in the ON state.  To prevent this the autorelease parameter defaults to true.  If you do not use integration applications that exhibit this sort of anti-social behavior and you wish to trigger rules on both button press and release, you can set autorelease to false.
 
@@ -109,7 +109,7 @@ Thing lutron:keypad:entrykeypad (lutron:ipbridge:radiora2) [ integrationId=10, m
 
 A channel with item type Switch and category Switch is created for each button, and a channel with item type Switch and category Light is created for each button indicator LED.  You can monitor button channels for ON and OFF state changes to indicate button presses and releases, and send ON and OFF commands to remotely press and release buttons. Ditto for the indicator LED channels.  Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
-When using auto-discovery, remember to select the correct value for the model parameter after accepting the ttkeypad thing from the inbox. The correct channels will then be automatically configured.
+When using auto-discovery, remember to select the correct value for the model parameter after accepting the keypad thing from the inbox. The correct channels will then be automatically configured.
 
 
 ### Tabletop SeeTouch Keypads
@@ -134,7 +134,7 @@ Example:
 Thing lutron:pico:hallpico (lutron:ipbridge:radiora2) [ integrationId=12, model="3BRL", autorelease="true" ]
 ```
 
-When using auto-discovery, remember to select the correct value for the model parameter after accepting the ttkeypad thing from the inbox.  The correct channels will then be automatically configured.
+When using auto-discovery, remember to select the correct value for the model parameter after accepting the pico thing from the inbox.  The correct channels will then be automatically configured.
 
 ### VCRX
 
