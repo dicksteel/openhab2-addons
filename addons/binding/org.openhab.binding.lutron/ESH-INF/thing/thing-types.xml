@@ -180,69 +180,43 @@
         </supported-bridge-type-refs>
 
         <label>seeTouch Keypad</label>
-        <description>Button keypad</description>
-
-        <channels>
-            <channel id="button1" typeId="button">
-                <label>Button 1</label>
-            </channel>
-            <channel id="button2" typeId="button">
-                <label>Button 2</label>
-            </channel>
-            <channel id="button3" typeId="button">
-                <label>Button 3</label>
-            </channel>
-            <channel id="button4" typeId="button">
-                <label>Button 4</label>
-            </channel>
-            <channel id="button5" typeId="button">
-                <label>Button 5</label>
-            </channel>
-            <channel id="button6" typeId="button">
-                <label>Button 6</label>
-            </channel>
-            <channel id="button7" typeId="button">
-                <label>Button 7</label>
-            </channel>
-            <channel id="buttontopraise" typeId="button">
-                <label>Button Top Raise</label>
-            </channel>
-            <channel id="buttontoplower" typeId="button">
-                <label>Button Top Lower</label>
-            </channel>
-            <channel id="buttonbottomraise" typeId="button">
-                <label>Button Bottom Raise</label>
-            </channel>
-            <channel id="buttonbottomlower" typeId="button">
-                <label>Button Bottom Lower</label>
-            </channel>
-            <channel id="led1" typeId="ledIndicator">
-                <label>LED 1</label>
-            </channel>
-            <channel id="led2" typeId="ledIndicator">
-                <label>LED 2</label>
-            </channel>
-            <channel id="led3" typeId="ledIndicator">
-                <label>LED 3</label>
-            </channel>
-            <channel id="led4" typeId="ledIndicator">
-                <label>LED 4</label>
-            </channel>
-            <channel id="led5" typeId="ledIndicator">
-                <label>LED 5</label>
-            </channel>
-            <channel id="led6" typeId="ledIndicator">
-                <label>LED 6</label>
-            </channel>
-            <channel id="led7" typeId="ledIndicator">
-                <label>LED 7</label>
-            </channel>
-        </channels>
+        <description>Lutron seeTouch/Hybrid seeTouch wall keypad</description>
 
         <config-description>
             <parameter name="integrationId" type="integer" required="true">
                 <label>Integration ID</label>
                 <description>Address of keypad in the Lutron lighting system</description>
+            </parameter>
+            <parameter name="model" type="text" required="false">
+                <label>Keypad Model</label>
+                <description>Keypad model number without the system prefix</description>
+                <options>
+                    <option value="H1RLD">H1RLD</option>
+                    <option value="H2RLD">H2RLD</option>
+                    <option value="H3BSRL">H3BSRL</option>
+                    <option value="H3S">H3S</option>
+                    <option value="H4S">H4S</option>
+                    <option value="H5BRL">H5BRL</option>
+                    <option value="H6BRL">H6BRL</option>
+                    <option value="W1RLD">W1RLD</option>
+                    <option value="W2RLD">W2RLD</option>
+                    <option value="W3BD">W3BD</option>
+                    <option value="W3BRL">W3BRL</option>
+                    <option value="W3BSRL">W3BSRL</option>
+                    <option value="W3S">W3S</option>
+                    <option value="W4S">W4S</option>
+                    <option value="W5BRL">W5BRL</option>
+                    <option value="W5BRLIR">W5BRLIR</option>
+                    <option value="W6BRL">W6BRL</option>
+                    <option value="W7B">W7B</option>
+                    <option value="Generic">Generic</option>
+                </options>
+                <default>Generic</default>
+            </parameter>
+            <parameter name="autorelease" type="boolean" required="false">
+                <label>Auto-release</label>
+                <description>Automatically release pressed buttons</description>
+                <default>true</default>
             </parameter>
         </config-description>
     </thing-type>
