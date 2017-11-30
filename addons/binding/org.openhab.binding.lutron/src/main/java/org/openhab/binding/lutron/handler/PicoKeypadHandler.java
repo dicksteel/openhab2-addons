@@ -24,24 +24,27 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
 
     private static enum COMPONENT implements KeypadComponent {
         // Buttons for 2B, 2BRL, 3B, and 3BRL models
-        BUTTON1(2, "button1"),
-        BUTTON2(3, "button2"),
-        BUTTON3(4, "button3"),
-        RAISE(5, "buttonraise"),
-        LOWER(6, "buttonlower"),
+        BUTTON1(2, "button1", "Button 1"),
+        BUTTON2(3, "button2", "Button 2"),
+        BUTTON3(4, "button3", "Button 3"),
+
+        RAISE(5, "buttonraise", "Raise Button"),
+        LOWER(6, "buttonlower", "Lower Button"),
 
         // Buttons for PJ2-4B model
-        BUTTON01(8, "button01"),
-        BUTTON02(9, "button02"),
-        BUTTON03(10, "button03"),
-        BUTTON04(11, "button04");
+        BUTTON01(8, "button01", "Button 1"),
+        BUTTON02(9, "button02", "Button 2"),
+        BUTTON03(10, "button03", "Button 3"),
+        BUTTON04(11, "button04", "Button 4");
 
         private final int id;
         private final String channel;
+        private final String description;
 
-        COMPONENT(final int i, final String c) {
+        COMPONENT(final int i, final String c, final String d) {
             id = i;
             channel = c;
+            description = d;
         }
 
         @Override
@@ -54,6 +57,10 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
             return this.channel;
         }
 
+        @Override
+        public String description() {
+            return this.description;
+        }
     }
 
     private Logger logger = LoggerFactory.getLogger(PicoKeypadHandler.class);

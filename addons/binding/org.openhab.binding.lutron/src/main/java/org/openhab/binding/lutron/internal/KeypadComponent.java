@@ -21,4 +21,6 @@ public interface KeypadComponent {
     public int id();
 
     public String channel();
+
+    public String description();
 }

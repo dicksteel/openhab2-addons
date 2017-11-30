@@ -43,6 +43,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected static enum Component implements KeypadComponent {
         // This "pseudo-abstract" static enum should be "overridden" in subclasses
         // by creating a new COMPONENT enum implementing the KeypadComponent interface.
+        // This silliness is necessary because Java does not support true overriding of enums in subclasses.
         ;
 
         @Override
@@ -54,6 +55,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         public String channel() {
             return null;
         }
+
+        @Override
+        public String description() {
+            return null;
+        }
+
     }
 
     protected static final Integer ACTION_PRESS = 3;
@@ -102,7 +109,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         for (KeypadComponent component : buttonList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "buttonAdvanced" : "button");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
-                    .withType(channelTypeUID).build();
+                    .withType(channelTypeUID).withLabel(component.description()).build();
             channelList.add(channel);
         }
 
@@ -110,7 +117,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         for (KeypadComponent component : ledList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "ledIndicatorAdvanced" : "ledIndicator");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
-                    .withType(channelTypeUID).build();
+                    .withType(channelTypeUID).withLabel(component.description()).build();
             channelList.add(channel);
         }
 
@@ -118,12 +125,13 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         for (KeypadComponent component : cciList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, "cciState");
             channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Contact")
-                    .withType(channelTypeUID).build();
+                    .withType(channelTypeUID).withLabel(component.description()).build();
             channelList.add(channel);
         }
 
         thingBuilder.withChannels(channelList);
         updateThing(thingBuilder.build());
+        logger.debug("Done configuring channels for keypad {}", integrationId);
     }
 
     protected ChannelUID channelFromComponent(int component) {

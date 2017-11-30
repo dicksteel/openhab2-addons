@@ -24,36 +24,38 @@ import org.slf4j.LoggerFactory;
 public class KeypadHandler extends BaseKeypadHandler {
 
     private static enum COMPONENT implements KeypadComponent {
-        BUTTON1(1, "button1"),
-        BUTTON2(2, "button2"),
-        BUTTON3(3, "button3"),
-        BUTTON4(4, "button4"),
-        BUTTON5(5, "button5"),
-        BUTTON6(6, "button6"),
-        BUTTON7(7, "button7"),
+        BUTTON1(1, "button1", "Button 1"),
+        BUTTON2(2, "button2", "Button 2"),
+        BUTTON3(3, "button3", "Button 3"),
+        BUTTON4(4, "button4", "Button 4"),
+        BUTTON5(5, "button5", "Button 5"),
+        BUTTON6(6, "button6", "Button 6"),
+        BUTTON7(7, "button7", "Button 7"),
 
-        LOWER1(16, "buttontoplower"),
-        RAISE1(17, "buttontopraise"),
-        LOWER2(18, "buttonbottomlower"),
-        RAISE2(19, "buttonbottomraise"),
+        LOWER1(16, "buttontoplower", "Top lower button"),
+        RAISE1(17, "buttontopraise", "Top raise button"),
+        LOWER2(18, "buttonbottomlower", "Bottom lower button"),
+        RAISE2(19, "buttonbottomraise", "Bottom raise button"),
 
-        // CCI1(25, "cci1"), // listed in spec but currently unused in binding
-        // CCI2(26, "cci2"), // listed in spec but currently unused in binding
+        // CCI1(25, "cci1", ""), // listed in spec but currently unused in binding
+        // CCI2(26, "cci2", ""), // listed in spec but currently unused in binding
 
-        LED1(81, "led1"),
-        LED2(82, "led2"),
-        LED3(83, "led3"),
-        LED4(84, "led4"),
-        LED5(85, "led5"),
-        LED6(86, "led6"),
-        LED7(87, "led7");
+        LED1(81, "led1", "LED 1"),
+        LED2(82, "led2", "LED 2"),
+        LED3(83, "led3", "LED 3"),
+        LED4(84, "led4", "LED 4"),
+        LED5(85, "led5", "LED 5"),
+        LED6(86, "led6", "LED 6"),
+        LED7(87, "led7", "LED 7");
 
         private final int id;
         private final String channel;
+        private final String description;
 
-        COMPONENT(final int i, final String c) {
+        COMPONENT(final int i, final String c, final String d) {
             id = i;
             channel = c;
+            description = d;
         }
 
         @Override
@@ -64,6 +66,11 @@ public class KeypadHandler extends BaseKeypadHandler {
         @Override
         public String channel() {
             return this.channel;
+        }
+
+        @Override
+        public String description() {
+            return this.description;
         }
 
     }

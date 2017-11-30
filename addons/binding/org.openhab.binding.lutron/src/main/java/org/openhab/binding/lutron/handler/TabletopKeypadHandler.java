@@ -25,54 +25,56 @@ import org.slf4j.LoggerFactory;
 public class TabletopKeypadHandler extends BaseKeypadHandler {
 
     private static enum COMPONENT implements KeypadComponent {
-        BUTTON1(1, "button1"),
-        BUTTON2(2, "button2"),
-        BUTTON3(3, "button3"),
-        BUTTON4(4, "button4"),
-        BUTTON5(5, "button5"),
-        BUTTON6(6, "button6"),
-        BUTTON7(7, "button7"),
-        BUTTON8(8, "button8"),
-        BUTTON9(9, "button9"),
-        BUTTON10(10, "button10"),
-        BUTTON11(11, "button11"),
-        BUTTON12(12, "button12"),
-        BUTTON13(13, "button13"),
-        BUTTON14(14, "button14"),
-        BUTTON15(15, "button15"),
+        BUTTON1(1, "button1", "Button 1"),
+        BUTTON2(2, "button2", "Button 2"),
+        BUTTON3(3, "button3", "Button 3"),
+        BUTTON4(4, "button4", "Button 4"),
+        BUTTON5(5, "button5", "Button 5"),
+        BUTTON6(6, "button6", "Button 6"),
+        BUTTON7(7, "button7", "Button 7"),
+        BUTTON8(8, "button8", "Button 8"),
+        BUTTON9(9, "button9", "Button 9"),
+        BUTTON10(10, "button10", "Button 10"),
+        BUTTON11(11, "button11", "Button 11"),
+        BUTTON12(12, "button12", "Button 12"),
+        BUTTON13(13, "button13", "Button 13"),
+        BUTTON14(14, "button14", "Button 14"),
+        BUTTON15(15, "button15", "Button 15"),
 
-        BUTTON16(16, "button16"),
-        BUTTON17(17, "button17"),
+        BUTTON16(16, "button16", "Button 16"),
+        BUTTON17(17, "button17", "Button 17"),
 
-        LOWER1(20, "buttonlower1"),
-        RAISE1(21, "buttonraise1"),
-        LOWER2(22, "buttonlower2"),
-        RAISE2(23, "buttonraise2"),
-        LOWER3(24, "buttonlower3"),
-        RAISE3(25, "buttonraise3"),
+        LOWER1(20, "buttonlower1", "Lower button 1"),
+        RAISE1(21, "buttonraise1", "Raise button 1"),
+        LOWER2(22, "buttonlower2", "Lower button 2"),
+        RAISE2(23, "buttonraise2", "Raise button 2"),
+        LOWER3(24, "buttonlower3", "Lower button 3"),
+        RAISE3(25, "buttonraise3", "Raise button 3"),
 
-        LED1(81, "led1"),
-        LED2(82, "led2"),
-        LED3(83, "led3"),
-        LED4(84, "led4"),
-        LED5(85, "led5"),
-        LED6(86, "led6"),
-        LED7(87, "led7"),
-        LED8(88, "led8"),
-        LED9(89, "led9"),
-        LED10(90, "led10"),
-        LED11(91, "led11"),
-        LED12(92, "led12"),
-        LED13(93, "led13"),
-        LED14(94, "led14"),
-        LED15(95, "led15");
+        LED1(81, "led1", "LED 1"),
+        LED2(82, "led2", "LED 2"),
+        LED3(83, "led3", "LED 3"),
+        LED4(84, "led4", "LED 4"),
+        LED5(85, "led5", "LED 5"),
+        LED6(86, "led6", "LED 6"),
+        LED7(87, "led7", "LED 7"),
+        LED8(88, "led8", "LED 8"),
+        LED9(89, "led9", "LED 9"),
+        LED10(90, "led10", "LED 10"),
+        LED11(91, "led11", "LED 11"),
+        LED12(92, "led12", "LED 12"),
+        LED13(93, "led13", "LED 13"),
+        LED14(94, "led14", "LED 14"),
+        LED15(95, "led15", "LED 15");
 
         private final int id;
         private final String channel;
+        private final String description;
 
-        COMPONENT(final int i, final String c) {
+        COMPONENT(final int i, final String c, final String d) {
             id = i;
             channel = c;
+            description = d;
         }
 
         @Override
@@ -83,6 +85,11 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
         @Override
         public String channel() {
             return this.channel;
+        }
+
+        @Override
+        public String description() {
+            return this.description;
         }
 
     }

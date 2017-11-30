@@ -24,31 +24,33 @@ import org.slf4j.LoggerFactory;
 public class VcrxHandler extends BaseKeypadHandler {
 
     private static enum COMPONENT implements KeypadComponent {
-        BUTTON1(1, "button1"),
-        BUTTON2(2, "button2"),
-        BUTTON3(3, "button3"),
-        BUTTON4(4, "button4"),
-        BUTTON5(5, "button5"),
-        BUTTON6(6, "button6"),
+        BUTTON1(1, "button1", "Button 1"),
+        BUTTON2(2, "button2", "Button 2"),
+        BUTTON3(3, "button3", "Button 3"),
+        BUTTON4(4, "button4", "Button 4"),
+        BUTTON5(5, "button5", "Button 5"),
+        BUTTON6(6, "button6", "Button 6"),
 
-        CCI1(30, "cci1"),
-        CCI2(31, "cci2"),
-        CCI3(32, "cci3"),
-        CCI4(33, "cci4"),
+        CCI1(30, "cci1", "CCI 1"),
+        CCI2(31, "cci2", "CCI 2"),
+        CCI3(32, "cci3", "CCI 3"),
+        CCI4(33, "cci4", "CCI 4"),
 
-        LED1(81, "led1"),
-        LED2(82, "led2"),
-        LED3(83, "led3"),
-        LED4(84, "led4"),
-        LED5(85, "led5"),
-        LED6(86, "led6");
+        LED1(81, "led1", "LED 1"),
+        LED2(82, "led2", "LED 2"),
+        LED3(83, "led3", "LED 3"),
+        LED4(84, "led4", "LED 4"),
+        LED5(85, "led5", "LED 5"),
+        LED6(86, "led6", "LED 6");
 
         private final int id;
         private final String channel;
+        private final String description;
 
-        COMPONENT(final int i, final String c) {
+        COMPONENT(final int i, final String c, final String d) {
             id = i;
             channel = c;
+            description = d;
         }
 
         @Override
@@ -59,6 +61,11 @@ public class VcrxHandler extends BaseKeypadHandler {
         @Override
         public String channel() {
             return this.channel;
+        }
+
+        @Override
+        public String description() {
+            return this.description;
         }
 
     }
