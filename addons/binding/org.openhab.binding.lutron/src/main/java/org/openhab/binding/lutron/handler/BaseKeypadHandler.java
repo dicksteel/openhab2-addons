@@ -97,36 +97,60 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         super(thing);
     }
 
+    private boolean channelExists(List<Channel> channels, ChannelUID channelUID) {
+        if (channels == null) {
+            return false;
+        }
+        for (Channel ch : channels) {
+            if (ch.getUID().equals(channelUID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected void configureChannels() {
         Channel channel;
         ChannelTypeUID channelTypeUID;
+        ChannelUID channelUID;
         List<Channel> channelList = new ArrayList<Channel>();
         ThingBuilder thingBuilder = editThing();
 
         logger.debug("Configuring channels for keypad {}", integrationId);
 
+        List<Channel> oldChannels = getThing().getChannels();
+
         // add channels for buttons
         for (KeypadComponent component : buttonList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "buttonAdvanced" : "button");
-            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
-                    .withType(channelTypeUID).withLabel(component.description()).build();
-            channelList.add(channel);
+            channelUID = new ChannelUID(getThing().getUID(), component.channel());
+            if (!channelExists(oldChannels, channelUID)) {
+                channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
+                        .withLabel(component.description()).build();
+                channelList.add(channel);
+            }
         }
 
         // add channels for LEDs
         for (KeypadComponent component : ledList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "ledIndicatorAdvanced" : "ledIndicator");
-            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Switch")
-                    .withType(channelTypeUID).withLabel(component.description()).build();
-            channelList.add(channel);
+            channelUID = new ChannelUID(getThing().getUID(), component.channel());
+            if (!channelExists(oldChannels, channelUID)) {
+                channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
+                        .withLabel(component.description()).build();
+                channelList.add(channel);
+            }
         }
 
         // add channels for CCIs (for VCRX or eventually HomeWorks CCI)
         for (KeypadComponent component : cciList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, "cciState");
-            channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), component.channel()), "Contact")
-                    .withType(channelTypeUID).withLabel(component.description()).build();
-            channelList.add(channel);
+            channelUID = new ChannelUID(getThing().getUID(), component.channel());
+            if (!channelExists(oldChannels, channelUID)) {
+                channel = ChannelBuilder.create(channelUID, "Contact").withType(channelTypeUID)
+                        .withLabel(component.description()).build();
+                channelList.add(channel);
+            }
         }
 
         thingBuilder.withChannels(channelList);
