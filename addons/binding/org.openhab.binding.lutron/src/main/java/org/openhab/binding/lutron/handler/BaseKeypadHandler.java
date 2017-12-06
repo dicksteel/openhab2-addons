@@ -97,60 +97,53 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         super(thing);
     }
 
-    private boolean channelExists(List<Channel> channels, ChannelUID channelUID) {
-        if (channels == null) {
-            return false;
-        }
-        for (Channel ch : channels) {
-            if (ch.getUID().equals(channelUID)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     protected void configureChannels() {
         Channel channel;
         ChannelTypeUID channelTypeUID;
         ChannelUID channelUID;
-        List<Channel> channelList = new ArrayList<Channel>();
-        ThingBuilder thingBuilder = editThing();
+        List<Channel> channelList;
+        List<Channel> existingChannels;
 
         logger.debug("Configuring channels for keypad {}", integrationId);
 
-        List<Channel> oldChannels = getThing().getChannels();
+        channelList = new ArrayList<Channel>();
+        existingChannels = getThing().getChannels();
+
+        if (existingChannels != null && !existingChannels.isEmpty()) {
+            // Clear existing channels
+            logger.debug("Clearing existing channels for keypad {}", integrationId);
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannels(channelList);
+            updateThing(thingBuilder.build());
+        }
+
+        ThingBuilder thingBuilder = editThing();
 
         // add channels for buttons
         for (KeypadComponent component : buttonList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "buttonAdvanced" : "button");
             channelUID = new ChannelUID(getThing().getUID(), component.channel());
-            if (!channelExists(oldChannels, channelUID)) {
-                channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
-                        .withLabel(component.description()).build();
-                channelList.add(channel);
-            }
+            channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
+                    .withLabel(component.description()).build();
+            channelList.add(channel);
         }
 
         // add channels for LEDs
         for (KeypadComponent component : ledList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "ledIndicatorAdvanced" : "ledIndicator");
             channelUID = new ChannelUID(getThing().getUID(), component.channel());
-            if (!channelExists(oldChannels, channelUID)) {
-                channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
-                        .withLabel(component.description()).build();
-                channelList.add(channel);
-            }
+            channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
+                    .withLabel(component.description()).build();
+            channelList.add(channel);
         }
 
         // add channels for CCIs (for VCRX or eventually HomeWorks CCI)
         for (KeypadComponent component : cciList) {
             channelTypeUID = new ChannelTypeUID(BINDING_ID, "cciState");
             channelUID = new ChannelUID(getThing().getUID(), component.channel());
-            if (!channelExists(oldChannels, channelUID)) {
-                channel = ChannelBuilder.create(channelUID, "Contact").withType(channelTypeUID)
-                        .withLabel(component.description()).build();
-                channelList.add(channel);
-            }
+            channel = ChannelBuilder.create(channelUID, "Contact").withType(channelTypeUID)
+                    .withLabel(component.description()).build();
+            channelList.add(channel);
         }
 
         thingBuilder.withChannels(channelList);
@@ -218,6 +211,10 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     private synchronized void asyncInitialize() {
         this.logger.debug("Async init thread staring for keypad handler {}", integrationId);
+
+        buttonList.clear();
+        ledList.clear();
+        cciList.clear();
         configureComponents(this.model);
 
         // load the channel-id map
@@ -234,11 +231,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         configureChannels();
 
         updateStatus(ThingStatus.ONLINE);
-
-        // query the status of all keypad LEDs
-        // for (KeypadComponent component : ledList) {
-        // queryDevice(component.id(), ACTION_LED_STATE);
-        // }
 
         this.logger.debug("Async init thread finishing for keypad handler {}", integrationId);
         return;
