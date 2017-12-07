@@ -271,22 +271,15 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
 
     @Override
     protected void configureComponents(String model) {
-        String mod = model == null ? "null" : model;
-        this.logger.debug("Configuring components for keypad model {}", mod);
-        // TODO: Check on other repeater models
-        switch (mod) {
-            default:
-                this.logger.warn("No valid model defined ({}). Assuming model RR-MAIN-REP.", mod);
-            case "MAIN-REP":
-                for (COMPONENT x : EnumSet.allOf(COMPONENT.class)) {
-                    if (isLed(x.id)) {
-                        ledList.add(x);
-                    }
-                    if (isButton(x.id)) {
-                        buttonList.add(x);
-                    }
-                }
-                break;
+        this.logger.debug("Configuring components for virtual keypad");
+
+        for (COMPONENT x : EnumSet.allOf(COMPONENT.class)) {
+            if (isLed(x.id)) {
+                ledList.add(x);
+            }
+            if (isButton(x.id)) {
+                buttonList.add(x);
+            }
         }
     }
 

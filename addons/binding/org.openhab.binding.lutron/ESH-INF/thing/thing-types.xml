@@ -302,10 +302,6 @@
                 <label>Integration ID</label>
                 <description>Address of VCRX in the Lutron control system</description>
             </parameter>
-            <parameter name="model" type="text" required="false">
-                <label>Model</label>
-                <description>VCRX model number</description>
-            </parameter>
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
                 <description>Automatically release pressed buttons</description>
@@ -326,10 +322,6 @@
             <parameter name="integrationId" type="integer" required="true">
                 <label>Integration ID</label>
                 <description>Address in the Lutron control system</description>
-            </parameter>
-            <parameter name="model" type="text" required="false">
-                <label>Model</label>
-                <description>Model number</description>
             </parameter>
             <parameter name="autorelease" type="boolean" required="false">
                 <label>Auto-release</label>
