@@ -69,12 +69,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected static final Integer LED_OFF = 0;
     protected static final Integer LED_ON = 1;
-    protected static final Integer LED_FLASH = 2;
-    protected static final Integer LED_RAPIDFLASH = 3;
+    protected static final Integer LED_FLASH = 2; // Same as 1 on RA2 keypads
+    protected static final Integer LED_RAPIDFLASH = 3; // Same as 1 on RA2 keypads
 
-    protected List<KeypadComponent> buttonList = new ArrayList<KeypadComponent>();
-    protected List<KeypadComponent> ledList = new ArrayList<KeypadComponent>();
-    protected List<KeypadComponent> cciList = new ArrayList<KeypadComponent>(); // for VCRX
+    protected List<KeypadComponent> buttonList;
+    protected List<KeypadComponent> ledList;
+    protected List<KeypadComponent> cciList;
 
     protected int integrationId;
     protected String model;
@@ -200,7 +200,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             this.autoRelease = arParam;
         }
 
-        // now schedule a thread to finish initialization asynchronously
+        // schedule a thread to finish initialization asynchronously since it can take several seconds
         this.scheduler.schedule(new Runnable() {
             @Override
             public void run() {
@@ -212,9 +212,10 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     private synchronized void asyncInitialize() {
         this.logger.debug("Async init thread staring for keypad handler {}", integrationId);
 
-        buttonList.clear();
-        ledList.clear();
-        cciList.clear();
+        buttonList = new ArrayList<KeypadComponent>();
+        ledList = new ArrayList<KeypadComponent>();
+        cciList = new ArrayList<KeypadComponent>();
+
         configureComponents(this.model);
 
         // load the channel-id map
@@ -261,7 +262,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
 
         // For LEDs, handle RefreshType and OnOffType commands
-        // TODO: Add support for FLASH & RAPIDFLASH string commands for appropriate keypad models
         if (isLed(componentID)) {
             if (command instanceof RefreshType) {
                 queryDevice(componentID, ACTION_LED_STATE);
@@ -347,7 +347,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     } else if (LED_OFF.toString().equals(parameters[2])) {
                         updateState(channelUID, OnOffType.OFF);
                     }
-                    // TODO: Handle LED_FLASH and LED_RAPIDFLASH states
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.ON);
                     if (this.autoRelease) {
